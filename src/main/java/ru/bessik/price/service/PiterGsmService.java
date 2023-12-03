@@ -76,7 +76,8 @@ public class PiterGsmService implements PriceService {
     }
 
     @Override
-    public void updateAll(List<Url> urls) {
+    public void updateAll() {
+        List<Url> urls = urlRepository.findAllByIsNeedUpdateIsTrue();
         // todo
     }
 
