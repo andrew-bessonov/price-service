@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.bessik.price.service.PriceService;
-import ru.bessik.price.controller.dto.StartTrackingRequest;
-import ru.bessik.price.controller.dto.StartTrackingResponse;
+import ru.bessik.price.controller.dto.TrackingRequest;
+import ru.bessik.price.controller.dto.TrackingResponse;
 
 @Slf4j
 @RestController
@@ -19,8 +19,14 @@ public class PriceController {
     private final PriceService priceService;
 
     @PostMapping("/track")
-    public StartTrackingResponse startTracking(@RequestBody StartTrackingRequest request) {
+    public TrackingResponse startTracking(@RequestBody TrackingRequest request) {
         log.info("[API] start tracking {}", request);
         return priceService.startTracking(request);
+    }
+
+    @PostMapping("/track/stop")
+    public TrackingResponse stopTracking(@RequestBody TrackingRequest request) {
+        log.info("[API] stop tracking {}", request);
+        return priceService.stopTracking(request);
     }
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StartTrackingResponse {
+public class TrackingResponse {
 
     private String status;
 }

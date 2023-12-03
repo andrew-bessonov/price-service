@@ -7,13 +7,17 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import ru.bessik.price.controller.dto.StartTrackingRequest;
-import ru.bessik.price.controller.dto.StartTrackingResponse;
+import ru.bessik.price.controller.dto.TrackingRequest;
+import ru.bessik.price.controller.dto.TrackingResponse;
 import ru.bessik.price.entity.Price;
+import ru.bessik.price.entity.Url;
 import ru.bessik.price.repository.PriceRepository;
+import ru.bessik.price.repository.UrlRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -21,9 +25,10 @@ import java.time.LocalDate;
 public class PiterGsmService implements PriceService {
 
     private final PriceRepository priceRepository;
+    private final UrlRepository urlRepository;
 
     @Override
-    public StartTrackingResponse startTracking(StartTrackingRequest request) {
+    public TrackingResponse startTracking(TrackingRequest request) {
         LocalDate now = LocalDate.now();
         String url = request.getProductUrl();
 
@@ -39,7 +44,7 @@ public class PiterGsmService implements PriceService {
         String productName = getProductName(document, url);
 
         if (price == null || productName == null) {
-            return StartTrackingResponse.builder()
+            return TrackingResponse.builder()
                     .status("Не найдены нужные поля на сайте")
                     .build();
         }
@@ -50,11 +55,39 @@ public class PiterGsmService implements PriceService {
                 .productUrl(url)
                 .price(price)
                 .build();
-
         priceRepository.save(entity);
 
-        return StartTrackingResponse.builder()
+        Optional<Url> optUrl = urlRepository.findByProductUrl(url);
+        if (optUrl.isEmpty()) {
+            Url entityUrl = Url.builder()
+                    .productUrl(url)
+                    .isNeedUpdate(true)
+                    .build();
+            urlRepository.save(entityUrl);
+        }
+        optUrl.ifPresent(it -> {
+            it.setIsNeedUpdate(true);
+            urlRepository.save(it);
+        });
+
+        return TrackingResponse.builder()
                 .status(String.format("saved success %s", entity))
+                .build();
+    }
+
+    @Override
+    public void updateAll(List<Url> urls) {
+        // todo
+    }
+
+    @Override
+    public TrackingResponse stopTracking(TrackingRequest request) {
+        urlRepository.findByProductUrl(request.getProductUrl()).ifPresent(url -> {
+            url.setIsNeedUpdate(false);
+            urlRepository.save(url);
+        });
+        return TrackingResponse.builder()
+                .status("unsubscribed success")
                 .build();
     }
 

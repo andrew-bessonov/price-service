@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StartTrackingRequest {
+public class TrackingRequest {
 
     /**
      * Ссылка на товар для отслеживания
