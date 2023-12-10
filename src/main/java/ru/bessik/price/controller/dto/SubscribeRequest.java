@@ -9,7 +9,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TrackingResponse {
+public class SubscribeRequest {
 
-    private String status;
+    /**
+     * telegram id
+     */
+    private String telegramId;
+
+    /**
+     * Ссылка на товар
+     */
+    private String productUrl;
 }

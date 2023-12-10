@@ -6,27 +6,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.bessik.price.service.PriceService;
-import ru.bessik.price.controller.dto.TrackingRequest;
-import ru.bessik.price.controller.dto.TrackingResponse;
+import ru.bessik.price.controller.dto.UpdatePriceRequest;
+import ru.bessik.price.controller.dto.UpdatePriceResponse;
+import ru.bessik.price.service.UpdatePriceService;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/price")
 public class PriceController {
 
-    private final PriceService priceService;
+    private final UpdatePriceService updatePriceService;
 
-    @PostMapping("/track")
-    public TrackingResponse startTracking(@RequestBody TrackingRequest request) {
-        log.info("[API] start tracking {}", request);
-        return priceService.startTracking(request);
+    @PostMapping("/update")
+    public UpdatePriceResponse updatePrice(@RequestBody UpdatePriceRequest request) {
+        updatePriceService.update(request.getProductUrl());
+        return new UpdatePriceResponse("Цена успешно обновлена");
     }
 
-    @PostMapping("/track/stop")
-    public TrackingResponse stopTracking(@RequestBody TrackingRequest request) {
-        log.info("[API] stop tracking {}", request);
-        return priceService.stopTracking(request);
-    }
+    // todo update All
 }

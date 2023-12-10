@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final PriceService priceService;
+    private final UpdatePriceService priceService;
 
     @Scheduled(cron = "0 0 15 * * *")
     public void updatePrice() {

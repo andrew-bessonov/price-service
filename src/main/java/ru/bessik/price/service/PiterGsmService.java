@@ -7,90 +7,63 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import ru.bessik.price.controller.dto.TrackingRequest;
-import ru.bessik.price.controller.dto.TrackingResponse;
 import ru.bessik.price.entity.Price;
-import ru.bessik.price.entity.Url;
-import ru.bessik.price.repository.PriceRepository;
-import ru.bessik.price.repository.UrlRepository;
+import ru.bessik.price.entity.Product;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PiterGsmService implements PriceService {
+public class PiterGsmService implements UpdatePriceService {
 
-    private final PriceRepository priceRepository;
-    private final UrlRepository urlRepository;
+    private final ProductService productService;
 
     @Override
-    public TrackingResponse startTracking(TrackingRequest request) {
-        LocalDate now = LocalDate.now();
-        String url = request.getProductUrl();
+    public void updateAll() {
+        List<Product> products = productService.getAll(); // todo брать только те товары, на которые подписаны люди
+        products.forEach(this::update);
+    }
+
+    @Override
+    public void update(String url) {
+        update(productService.getByUrl(url));
+    }
+
+    @Override
+    public void update(Product product) {
+        String url = product.getUrl();
 
         Document document;
         try {
             document = Jsoup.connect(url).get();
         } catch (IOException e) {
             log.error("Не получилось достать данные с страницы {}", url, e);
-            return null;
+            return;
         }
 
         Double price = getPrice(document, url);
         String productName = getProductName(document, url);
 
         if (price == null || productName == null) {
-            return TrackingResponse.builder()
-                    .status("Не найдены нужные поля на сайте")
-                    .build();
+            return;
         }
 
-        Price entity = Price.builder()
-                .priceDate(now)
-                .productName(productName)
-                .productUrl(url)
+        if (product.getName() == null) {
+            product.setName(productName);
+        }
+
+        Price priceEntity = Price.builder()
                 .price(price)
+                .priceDate(LocalDate.now())
                 .build();
-        priceRepository.save(entity);
+        product.getPrices().add(priceEntity);
 
-        Optional<Url> optUrl = urlRepository.findByProductUrl(url);
-        if (optUrl.isEmpty()) {
-            Url entityUrl = Url.builder()
-                    .productUrl(url)
-                    .isNeedUpdate(true)
-                    .build();
-            urlRepository.save(entityUrl);
-        }
-        optUrl.ifPresent(it -> {
-            it.setIsNeedUpdate(true);
-            urlRepository.save(it);
-        });
-
-        return TrackingResponse.builder()
-                .status(String.format("saved success %s", entity))
-                .build();
+        productService.updateProduct(product);
     }
 
-    @Override
-    public void updateAll() {
-        List<Url> urls = urlRepository.findAllByIsNeedUpdateIsTrue();
-        // todo
-    }
-
-    @Override
-    public TrackingResponse stopTracking(TrackingRequest request) {
-        urlRepository.findByProductUrl(request.getProductUrl()).ifPresent(url -> {
-            url.setIsNeedUpdate(false);
-            urlRepository.save(url);
-        });
-        return TrackingResponse.builder()
-                .status("unsubscribed success")
-                .build();
-    }
 
     private String getProductName(Document document, String url) {
         Element titleElement = document.selectFirst("h1[data-product-name]");

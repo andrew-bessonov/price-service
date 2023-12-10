@@ -23,11 +23,6 @@ public class Price {
     private Long id;
 
     /**
-     * Наименование товара
-     */
-    private String productName;
-
-    /**
      * Цена товара
      */
     private Double price;
@@ -37,8 +32,8 @@ public class Price {
      */
     private LocalDate priceDate;
 
-    /**
-     * Ссылка на товар
-     */
-    private String productUrl;
+//    /**
+//     * Товар
+//     */
+//    private Product product;
 }
