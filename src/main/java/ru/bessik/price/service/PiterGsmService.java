@@ -1,5 +1,6 @@
 package ru.bessik.price.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.bessik.price.entity.Price;
 import ru.bessik.price.entity.Product;
+import ru.bessik.price.repository.PriceRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -20,19 +22,23 @@ import java.util.List;
 public class PiterGsmService implements UpdatePriceService {
 
     private final ProductService productService;
+    private final PriceRepository priceRepository;
 
     @Override
+    @Transactional
     public void updateAll() {
         List<Product> products = productService.getAll(); // todo брать только те товары, на которые подписаны люди
         products.forEach(this::update);
     }
 
     @Override
+    @Transactional
     public void update(String url) {
         update(productService.getByUrl(url));
     }
 
     @Override
+    @Transactional
     public void update(Product product) {
         String url = product.getUrl();
 
@@ -48,6 +54,7 @@ public class PiterGsmService implements UpdatePriceService {
         String productName = getProductName(document, url);
 
         if (price == null || productName == null) {
+            log.warn("Не удалось получить необходимые данные с сайта (цена {}, название {}", price, productName);
             return;
         }
 
@@ -58,12 +65,14 @@ public class PiterGsmService implements UpdatePriceService {
         Price priceEntity = Price.builder()
                 .price(price)
                 .priceDate(LocalDate.now())
+                .product(product)
                 .build();
         product.getPrices().add(priceEntity);
 
-        productService.updateProduct(product);
+        Price savedPrice = priceRepository.save(priceEntity);
+        Product updateProduct = productService.updateProduct(product);
+        log.info("success saved {} && {}", updateProduct, savedPrice);
     }
-
 
     private String getProductName(Document document, String url) {
         Element titleElement = document.selectFirst("h1[data-product-name]");

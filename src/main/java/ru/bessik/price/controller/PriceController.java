@@ -20,6 +20,7 @@ public class PriceController {
 
     @PostMapping("/update")
     public UpdatePriceResponse updatePrice(@RequestBody UpdatePriceRequest request) {
+        log.info("[API] update price {}", request.getProductUrl());
         updatePriceService.update(request.getProductUrl());
         return new UpdatePriceResponse("Цена успешно обновлена");
     }
