@@ -1,27 +1,24 @@
 package ru.bessik.price.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.MappedCollection;
-import org.springframework.data.relational.core.mapping.Table;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Entity
 @Builder
-@Table("users")
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "users")
 public class User {
 
     /**
      * id
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -42,7 +39,10 @@ public class User {
     /**
      * Подписки на товары
      */
+    @ManyToMany
+    @JoinTable(name = "user_subscriptions",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "product_id") })
     @Builder.Default
-    @MappedCollection(idColumn = "users_id", keyColumn = "product_id")
     private List<Product> subscriptions = new ArrayList<>();
 }

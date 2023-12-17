@@ -1,5 +1,6 @@
 package ru.bessik.price.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,13 @@ public class UserService {
      * @param request Данные для подписки
      * @return статус
      */
+    @Transactional
     public SubscribeResponse startSubscribe(SubscribeRequest request) {
         User user = findUserByTelegramId(request.getTelegramId());
         Product product = productService.getByUrl(request.getProductUrl());
 
         user.getSubscriptions().add(product);
-        User updateUser = updateUser(user);
+        User updateUser = userRepository.save(user);
 
         return SubscribeResponse.builder()
                 .status(String.format("subscribed successfully %s", updateUser))
@@ -41,13 +43,5 @@ public class UserService {
                 .orElseGet(() -> User.builder()
                         .telegramId(telegramId)
                         .build());
-    }
-
-    private User updateUser(User user) {
-        if (user.getId() == null) {
-            log.error("Невозможно обновить пользователя без id");
-            return null;
-        }
-        return userRepository.save(user);
     }
 }
