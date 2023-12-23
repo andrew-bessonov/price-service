@@ -39,10 +39,11 @@ public class User {
     /**
      * Подписки на товары
      */
-    @ManyToMany
-    @JoinTable(name = "user_subscriptions",
-            joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "product_id") })
     @Builder.Default
+    @ToString.Exclude
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "user_subscriptions",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "product_id")})
     private List<Product> subscriptions = new ArrayList<>();
 }

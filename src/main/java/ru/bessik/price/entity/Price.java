@@ -34,8 +34,8 @@ public class Price {
     /**
      * Товар
      */
-    @ManyToOne
     @ToString.Exclude
-    @JoinColumn(name="product_id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
     private Product product;
 }

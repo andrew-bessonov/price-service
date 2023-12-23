@@ -36,17 +36,18 @@ public class Product {
      * Цена товара
      */
     @Builder.Default
-    @OneToMany(mappedBy = "product")
+    @ToString.Exclude
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Price> prices = new ArrayList<>();
 
     /**
      * Подписанные пользователи
      */
-    @ManyToMany
-    @JoinTable(name = "user_subscriptions",
-            joinColumns = { @JoinColumn(name = "product_id") },
-            inverseJoinColumns = { @JoinColumn(name = "user_id") })
     @Builder.Default
     @ToString.Exclude
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "user_subscriptions",
+            joinColumns = {@JoinColumn(name = "product_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private List<User> subscribedUsers = new ArrayList<>();
 }

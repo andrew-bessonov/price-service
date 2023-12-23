@@ -30,15 +30,5 @@ public class SubscribeController {
         return userService.startSubscribe(request);
     }
 
-    /**
-     * Подписаться на товар
-     *
-     * @param request данные для подписки
-     * @return статус
-     */
-    @PostMapping("/unsubscribe")
-    public SubscribeResponse unsubscribe(@RequestBody SubscribeRequest request) {
-        log.info("[API] unsubscribe {}", request);
-        return null; // todo userService.unsubscribe(request);
-    }
+    // todo отписаться
 }

@@ -7,7 +7,7 @@ public interface UpdatePriceService {
     /**
      * Обновить цену у всех товаров.
      */
-    void updateAll();
+    void updateAll() throws InterruptedException;
 
     /**
      * Обновить цену у товара.

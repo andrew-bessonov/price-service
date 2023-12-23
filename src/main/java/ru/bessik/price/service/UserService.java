@@ -27,18 +27,25 @@ public class UserService {
      */
     @Transactional
     public SubscribeResponse startSubscribe(SubscribeRequest request) {
-        User user = findUserByTelegramId(request.getTelegramId());
-        Product product = productService.getByUrl(request.getProductUrl());
+        User user = findOrCreateUser(request.getTelegramId());
+        Product product = findOrCreateProduct(request);
 
         user.getSubscriptions().add(product);
-        User updateUser = userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         return SubscribeResponse.builder()
-                .status(String.format("subscribed successfully %s", updateUser))
+                .status(String.format("subscribed successfully %s", savedUser))
                 .build();
     }
 
-    private User findUserByTelegramId(String telegramId) {
+    private Product findOrCreateProduct(SubscribeRequest request) {
+        return productService.findByUrl(request.getProductUrl())
+                .orElseGet(() -> Product.builder()
+                        .url(request.getProductUrl())
+                        .build());
+    }
+
+    private User findOrCreateUser(String telegramId) {
         return userRepository.findByTelegramId(telegramId)
                 .orElseGet(() -> User.builder()
                         .telegramId(telegramId)

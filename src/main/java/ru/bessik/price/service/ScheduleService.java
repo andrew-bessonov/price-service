@@ -13,7 +13,7 @@ public class ScheduleService {
     private final UpdatePriceService priceService;
 
     @Scheduled(cron = "0 0 15 * * *")
-    public void updatePrice() {
+    public void updatePrice() throws InterruptedException {
         log.info("Началось обновление всех цен");
         priceService.updateAll();
     }
