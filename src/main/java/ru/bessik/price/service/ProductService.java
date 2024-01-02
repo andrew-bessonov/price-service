@@ -4,9 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.IterableUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import ru.bessik.price.controller.dto.PriceDto;
 import ru.bessik.price.controller.dto.PriceRequest;
+import ru.bessik.price.entity.Price;
 import ru.bessik.price.entity.Product;
 import ru.bessik.price.repository.ProductRepository;
 import ru.bessik.price.utils.PriceMapper;
@@ -24,13 +26,20 @@ public class ProductService {
     private final UpdatePriceService updatePriceService;
 
     @Transactional
-    public List<PriceDto> getPrices(PriceRequest request) {
-        LocalDate startDate = LocalDate.now().minusDays(request.getPeriodInDays());
-        Product product = productRepository.findByUrl(request.getProductUrl())
+    public List<Price> getPrices(String productUrl, Integer periodInDays) {
+        LocalDate startDate = LocalDate.now().minusDays(periodInDays);
+        Product product = productRepository.findByUrl(productUrl)
                 .orElseThrow();
         return product.getPrices().stream()
                 .filter(it -> it.getPriceDate().isAfter(startDate))
-                .map(PriceMapper::toDto)
+                .toList();
+    }
+
+    @Transactional
+    public List<Price> getPrices(Product product, Integer periodInDays) {
+        LocalDate startDate = LocalDate.now().minusDays(periodInDays);
+        return product.getPrices().stream()
+                .filter(it -> it.getPriceDate().isAfter(startDate))
                 .toList();
     }
 

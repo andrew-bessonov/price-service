@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.bessik.price.entity.Price;
@@ -14,6 +15,7 @@ import ru.bessik.price.repository.ProductRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -21,6 +23,8 @@ import java.time.LocalDate;
 public class PiterGsmService implements UpdatePriceService {
 
     private final ProductRepository productRepository;
+//    private final ProductService productService;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -60,6 +64,19 @@ public class PiterGsmService implements UpdatePriceService {
 
         Product updateProduct = productRepository.save(product);
         log.info("success saved {}", updateProduct);
+
+        checkLastPriceIsLower(updateProduct);
+    }
+
+    private void checkLastPriceIsLower(Product product) {
+        List<Price> prices = getPrices(product, 30);
+        double minValue = prices.stream()
+                .mapToDouble(Price::getPrice)
+                .min()
+                .orElseThrow();
+//        if (Double.compare(prices.getLast().getPrice(), minValue) <= 0) {
+            notificationService.notify(product);
+//        }
     }
 
     private String getProductName(Document document, String url) {
@@ -88,5 +105,12 @@ public class PiterGsmService implements UpdatePriceService {
             log.error("Не удалось преобразовать цену {}", priceString, e);
             return null;
         }
+    }
+
+    public List<Price> getPrices(Product product, Integer periodInDays) {
+        LocalDate startDate = LocalDate.now().minusDays(periodInDays);
+        return product.getPrices().stream()
+                .filter(it -> it.getPriceDate().isAfter(startDate))
+                .toList();
     }
 }

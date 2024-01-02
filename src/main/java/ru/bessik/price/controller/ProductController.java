@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.bessik.price.controller.dto.*;
 import ru.bessik.price.service.ProductService;
 import ru.bessik.price.service.UserService;
+import ru.bessik.price.utils.PriceMapper;
 
 import java.util.List;
 
@@ -55,7 +56,9 @@ public class ProductController {
     @PostMapping("/prices")
     public PriceResponse getPrices(@RequestBody PriceRequest request) {
         log.info("[API] get prices for {}", request.getProductUrl());
-        List<PriceDto> prices = productService.getPrices(request);
+        List<PriceDto> prices = productService.getPrices(request.getProductUrl(), request.getPeriodInDays()).stream()
+                .map(PriceMapper::toDto)
+                .toList();
         return new PriceResponse(prices);
     }
 
