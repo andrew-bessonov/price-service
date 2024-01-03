@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.bessik.price.entity.Price;
@@ -23,7 +22,7 @@ import java.util.List;
 public class PiterGsmService implements UpdatePriceService {
 
     private final ProductRepository productRepository;
-//    private final ProductService productService;
+    //    private final ProductService productService;
     private final NotificationService notificationService;
 
     @Override
@@ -36,7 +35,7 @@ public class PiterGsmService implements UpdatePriceService {
             document = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36")
                     .referrer("http://www.google.com")
-                    .timeout(5000)
+                    .timeout(10000)
                     .get();
         } catch (IOException e) {
             log.error("Не получилось достать данные с страницы {}", url, e);
@@ -75,7 +74,7 @@ public class PiterGsmService implements UpdatePriceService {
                 .min()
                 .orElseThrow();
 //        if (Double.compare(prices.getLast().getPrice(), minValue) <= 0) {
-            notificationService.notify(product);
+        notificationService.notify(product);
 //        }
     }
 
