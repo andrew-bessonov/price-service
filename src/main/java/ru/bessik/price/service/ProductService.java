@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.bessik.price.entity.Price;
 import ru.bessik.price.entity.Product;
 import ru.bessik.price.repository.ProductRepository;
+import ru.bessik.price.utils.Utils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,15 +26,7 @@ public class ProductService {
     public List<Price> getPrices(String productUrl, Integer periodInDays) {
         Product product = productRepository.findByUrl(productUrl)
                 .orElseThrow();
-        return getPrices(product, periodInDays);
-    }
-
-    @Transactional
-    public List<Price> getPrices(Product product, Integer periodInDays) {
-        LocalDate startDate = LocalDate.now().minusDays(periodInDays);
-        return product.getPrices().stream()
-                .filter(it -> it.getPriceDate().isAfter(startDate))
-                .toList();
+        return Utils.getPrices(product, periodInDays);
     }
 
     @Transactional

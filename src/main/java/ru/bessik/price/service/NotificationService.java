@@ -10,6 +10,7 @@ import ru.bessik.price.feign.TelegramBotFeignClient;
 import ru.bessik.price.feign.dto.SendMessageRequest;
 import ru.bessik.price.feign.dto.SendMessageResponse;
 import ru.bessik.price.feign.dto.SendMessageStatus;
+import ru.bessik.price.utils.Utils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,11 +20,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    public static final String MESSAGE_TEXT = "Изменилась цена на товар %s, \n Сейчас самая низкая за последний месяц (%s)";
+    private static final String MESSAGE_TEXT = "Изменилась цена на товар %s, \n Сейчас самая низкая за последний месяц (%s)";
+
     private final TelegramBotFeignClient telegramBotFeignClient;
 
     public void checkLastPriceIsLower(Product product) {
-        List<Price> prices = getPrices(product, 30);
+        List<Price> prices = Utils.getPrices(product, 30);
         double minValue = prices.stream()
                 .mapToDouble(Price::getPrice)
                 .min()
@@ -54,12 +56,5 @@ public class NotificationService {
                 log.error("Не удалось отправить сообщение", e);
             }
         }
-    }
-
-    private List<Price> getPrices(Product product, Integer periodInDays) {
-        LocalDate startDate = LocalDate.now().minusDays(periodInDays);
-        return product.getPrices().stream()
-                .filter(it -> it.getPriceDate().isAfter(startDate))
-                .toList();
     }
 }
