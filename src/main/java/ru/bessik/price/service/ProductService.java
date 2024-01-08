@@ -23,12 +23,9 @@ public class ProductService {
 
     @Transactional
     public List<Price> getPrices(String productUrl, Integer periodInDays) {
-        LocalDate startDate = LocalDate.now().minusDays(periodInDays);
         Product product = productRepository.findByUrl(productUrl)
                 .orElseThrow();
-        return product.getPrices().stream()
-                .filter(it -> it.getPriceDate().isAfter(startDate))
-                .toList();
+        return getPrices(product, periodInDays);
     }
 
     @Transactional

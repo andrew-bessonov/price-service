@@ -12,9 +12,6 @@ import lombok.NoArgsConstructor;
 public class SendMessageResponse {
 
     private String telegramId;
-
     private String message;
-
-    private String status;
-
+    private SendMessageStatus status;
 }
