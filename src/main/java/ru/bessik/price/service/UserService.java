@@ -65,8 +65,16 @@ public class UserService {
 
         User user = userOptional.get();
 
-        Product product = productRepository.findByUrl(request.getProductUrl())
-                .orElseThrow();
+        Optional<Product> productOptional = productRepository.findByUrl(request.getProductUrl());
+
+        if (productOptional.isEmpty()) {
+            return StatusResponse.builder()
+                    .status(String.format("unsubscribe not successfully, " +
+                            "user %s does not exists", request.getTelegramId()))
+                    .build();
+        }
+
+        Product product = productOptional.get();
 
         if(!user.getSubscriptions().contains(product)) {
             return StatusResponse.builder()
