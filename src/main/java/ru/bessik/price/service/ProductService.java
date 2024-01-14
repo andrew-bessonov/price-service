@@ -5,9 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.stereotype.Service;
+import ru.bessik.price.controller.dto.PriceDto;
+import ru.bessik.price.controller.dto.PriceResponse;
 import ru.bessik.price.entity.Price;
 import ru.bessik.price.entity.Product;
 import ru.bessik.price.repository.ProductRepository;
+import ru.bessik.price.utils.PriceMapper;
 import ru.bessik.price.utils.Utils;
 
 import java.time.LocalDate;
@@ -23,10 +26,16 @@ public class ProductService {
     private final UpdatePriceService updatePriceService;
 
     @Transactional
-    public List<Price> getPrices(String productUrl, Integer periodInDays) {
+    public PriceResponse getPrices(String productUrl, Integer periodInDays) {
         Product product = productRepository.findByUrl(productUrl)
                 .orElseThrow();
-        return Utils.getPrices(product, periodInDays);
+
+        List<Price> prices = Utils.getPrices(product, periodInDays);
+        List<PriceDto> priceDtos = prices.stream()
+                .map(PriceMapper::toDto)
+                .toList();
+
+        return new PriceResponse(priceDtos);
     }
 
     @Transactional

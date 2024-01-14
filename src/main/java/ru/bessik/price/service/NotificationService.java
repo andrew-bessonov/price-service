@@ -20,10 +20,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private static final String MESSAGE_TEXT = "Изменилась цена на товар %s, \n Сейчас самая низкая за последний месяц (%s)";
+    private static final String MESSAGE_TEXT = "Изменилась цена на товар %s, \nСейчас самая низкая за последний месяц (%s)";
 
     private final TelegramBotFeignClient telegramBotFeignClient;
 
+    /**
+     * Проверить последнюю цену на самую низкую за период<br>
+     * Если цена самая низкая - уведомить подписанных пользователей через telegram
+     *
+     * @param product товар
+     */
     public void checkLastPriceIsLower(Product product) {
         List<Price> prices = Utils.getPrices(product, 30);
         double minValue = prices.stream()

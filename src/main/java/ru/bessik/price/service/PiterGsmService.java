@@ -43,7 +43,7 @@ public class PiterGsmService implements UpdatePriceService {
         Double price = getPrice(document, url);
         String productName = getProductName(document, url);
 
-        if (price == null || productName == null) {
+        if (price == null || productName == null) { // todo productName не обязательно?
             log.warn("Не удалось получить необходимые данные с сайта (цена {}, название {}", price, productName);
             return;
         }
@@ -60,7 +60,7 @@ public class PiterGsmService implements UpdatePriceService {
         product.getPrices().add(priceEntity);
 
         Product updateProduct = productRepository.save(product);
-        log.info("success saved {}", updateProduct);
+        log.info("success saved {} - {}", updateProduct, price);
 
         notificationService.checkLastPriceIsLower(updateProduct);
     }
@@ -68,12 +68,12 @@ public class PiterGsmService implements UpdatePriceService {
     private String getProductName(Document document, String url) {
         Element titleElement = document.selectFirst("h1[data-product-name]");
 
-        if (titleElement != null) {
-            return titleElement.attr("data-product-name");
-        } else {
+        if (titleElement == null) {
             log.error("Не найдено наименование товара на странице {}", url);
             return null;
         }
+
+        return titleElement.attr("data-product-name");
     }
 
     private Double getPrice(Document document, String url) {
