@@ -20,6 +20,7 @@ public class ProductController {
     private final TelegramBotFeignClient botFeignClient;
 
     //todo методы update, updateAll, getPrice, getPrices, unsubscribe-all перенести в новый контроллер PriceController "/api/v1/price"
+
     /**
      * Обновить данные о товаре.
      *

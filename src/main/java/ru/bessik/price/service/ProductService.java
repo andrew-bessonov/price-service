@@ -13,7 +13,6 @@ import ru.bessik.price.repository.ProductRepository;
 import ru.bessik.price.utils.PriceMapper;
 import ru.bessik.price.utils.Utils;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 

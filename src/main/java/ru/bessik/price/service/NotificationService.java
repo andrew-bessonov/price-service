@@ -12,7 +12,6 @@ import ru.bessik.price.feign.dto.SendMessageResponse;
 import ru.bessik.price.feign.dto.SendMessageStatus;
 import ru.bessik.price.utils.Utils;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
