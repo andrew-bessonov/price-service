@@ -39,6 +39,42 @@ public class UserService {
                 .build();
     }
 
+    /**
+     * Отписаться от товара.<br>
+     * Если пользователя или товара не было в БД - логируем
+     *
+     * @param request Данные для отписки
+     * @return статус
+     */
+    @Transactional
+    public StatusResponse unSubscribe(SubscribeRequest request) {
+
+        if(!userRepository.findByTelegramId(request.getTelegramId()).isPresent()) {
+            return StatusResponse.builder()
+                    .status(String.format("unsubscribe not successfully, " +
+                            "user %s does not exists", request.getTelegramId()))
+                    .build();
+        }
+
+        User user = userRepository.findByTelegramId(request.getTelegramId()).get();
+
+        if(!user.getSubscriptions().contains(request.getProductUrl())) {
+            return StatusResponse.builder()
+                    .status(String.format("unsubscribe not successfully, " +
+                            "subscribe %s does not exists for user %s", request.getProductUrl(), user))
+                    .build();
+        }
+
+        String product = request.getProductUrl();
+
+        user.getSubscriptions().remove(product);
+        User savedUser = userRepository.save(user);
+
+        return StatusResponse.builder()
+                .status(String.format("unsubscribed successfully %s", savedUser))
+                .build();
+    }
+
     private Product findOrCreateProduct(String productUrl) {
         return productRepository.findByUrl(productUrl)
                 .orElseGet(() -> Product.builder()
