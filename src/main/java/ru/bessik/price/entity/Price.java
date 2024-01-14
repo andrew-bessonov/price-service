@@ -38,4 +38,9 @@ public class Price {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @Override
+    public String toString() {
+        return String.format("%sр. от %s", getPrice(), getPriceDate());
+    }
 }

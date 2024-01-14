@@ -21,6 +21,7 @@ import java.time.LocalDate;
 public class PiterGsmService implements UpdatePriceService {
 
     private final ProductRepository productRepository;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -32,7 +33,7 @@ public class PiterGsmService implements UpdatePriceService {
             document = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36")
                     .referrer("http://www.google.com")
-                    .timeout(5000)
+                    .timeout(10000)
                     .get();
         } catch (IOException e) {
             log.error("Не получилось достать данные с страницы {}", url, e);
@@ -60,6 +61,8 @@ public class PiterGsmService implements UpdatePriceService {
 
         Product updateProduct = productRepository.save(product);
         log.info("success saved {}", updateProduct);
+
+        notificationService.checkLastPriceIsLower(updateProduct);
     }
 
     private String getProductName(Document document, String url) {

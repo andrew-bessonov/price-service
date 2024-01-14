@@ -2,13 +2,13 @@ package ru.bessik.price.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.bessik.price.controller.dto.*;
+import ru.bessik.price.feign.TelegramBotFeignClient;
+import ru.bessik.price.feign.dto.SendMessageRequest;
 import ru.bessik.price.service.ProductService;
 import ru.bessik.price.service.UserService;
+import ru.bessik.price.utils.PriceMapper;
 
 import java.util.List;
 
@@ -20,6 +20,7 @@ public class ProductController {
 
     private final ProductService productService;
     private final UserService userService;
+    private final TelegramBotFeignClient botFeignClient;
 
     /**
      * Обновить данные о товаре.
@@ -55,7 +56,9 @@ public class ProductController {
     @PostMapping("/prices")
     public PriceResponse getPrices(@RequestBody PriceRequest request) {
         log.info("[API] get prices for {}", request.getProductUrl());
-        List<PriceDto> prices = productService.getPrices(request);
+        List<PriceDto> prices = productService.getPrices(request.getProductUrl(), request.getPeriodInDays()).stream()
+                .map(PriceMapper::toDto)
+                .toList();
         return new PriceResponse(prices);
     }
 
@@ -81,5 +84,13 @@ public class ProductController {
     public StatusResponse unSubscribe(@RequestBody SubscribeRequest request) {
         log.info("[API] start subscribe {}", request);
         return userService.unSubscribe(request);
+    }
+
+    @GetMapping("/test")
+    public void test() {
+        botFeignClient.sendMessage(SendMessageRequest.builder()
+                .telegramId("375183651")
+                .message("test")
+                .build());
     }
 }
