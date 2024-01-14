@@ -11,6 +11,11 @@ import ru.bessik.price.entity.User;
 import ru.bessik.price.repository.ProductRepository;
 import ru.bessik.price.repository.UserRepository;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -47,25 +52,28 @@ public class UserService {
      * @return статус
      */
     @Transactional
-    public StatusResponse unSubscribe(SubscribeRequest request) {
+    public StatusResponse unsubscribe(SubscribeRequest request) {
 
-        if(!userRepository.findByTelegramId(request.getTelegramId()).isPresent()) {
+        Optional<User> userOptional = userRepository.findByTelegramId(request.getTelegramId());
+
+        if(userOptional.isEmpty()) {
             return StatusResponse.builder()
                     .status(String.format("unsubscribe not successfully, " +
                             "user %s does not exists", request.getTelegramId()))
                     .build();
         }
 
-        User user = userRepository.findByTelegramId(request.getTelegramId()).get();
+        User user = userOptional.get();
 
-        if(!user.getSubscriptions().contains(request.getProductUrl())) {
+        Product product = productRepository.findByUrl(request.getProductUrl())
+                .orElseThrow();
+
+        if(!user.getSubscriptions().contains(product)) {
             return StatusResponse.builder()
                     .status(String.format("unsubscribe not successfully, " +
                             "subscribe %s does not exists for user %s", request.getProductUrl(), user))
                     .build();
         }
-
-        String product = request.getProductUrl();
 
         user.getSubscriptions().remove(product);
         User savedUser = userRepository.save(user);

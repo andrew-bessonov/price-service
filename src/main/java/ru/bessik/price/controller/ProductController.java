@@ -81,9 +81,9 @@ public class ProductController {
      * @return статус
      */
     @PostMapping("/unsubscribe")
-    public StatusResponse unSubscribe(@RequestBody SubscribeRequest request) {
-        log.info("[API] start subscribe {}", request);
-        return userService.unSubscribe(request);
+    public StatusResponse unsubscribe(@RequestBody SubscribeRequest request) {
+        log.info("[API] start unsubscribe {}", request);
+        return userService.unsubscribe(request);
     }
 
     @GetMapping("/test")
