@@ -71,5 +71,15 @@ public class ProductController {
         return userService.subscribe(request);
     }
 
-    // todo отписаться
+    /**
+     * Отписаться от товара
+     *
+     * @param request данные для отписки
+     * @return статус
+     */
+    @PostMapping("/unsubscribe")
+    public StatusResponse unSubscribe(@RequestBody SubscribeRequest request) {
+        log.info("[API] start subscribe {}", request);
+        return userService.unSubscribe(request);
+    }
 }
