@@ -8,9 +8,6 @@ import ru.bessik.price.feign.TelegramBotFeignClient;
 import ru.bessik.price.feign.dto.SendMessageRequest;
 import ru.bessik.price.service.ProductService;
 import ru.bessik.price.service.UserService;
-import ru.bessik.price.utils.PriceMapper;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -18,9 +15,11 @@ import java.util.List;
 @RequestMapping("/api/v1/product")
 public class ProductController {
 
-    private final ProductService productService;
     private final UserService userService;
+    private final ProductService productService;
     private final TelegramBotFeignClient botFeignClient;
+
+    //todo методы update, updateAll, getPrice, getPrices, unsubscribe-all перенести в новый контроллер PriceController "/api/v1/price"
 
     /**
      * Обновить данные о товаре.
@@ -47,6 +46,8 @@ public class ProductController {
         return new StatusResponse("Цены успешно обновлены");
     }
 
+    // todo метод getPrice для получения текущей цены (Серега)
+
     /**
      * Получить список цен за период по товару.
      *
@@ -56,10 +57,7 @@ public class ProductController {
     @PostMapping("/prices")
     public PriceResponse getPrices(@RequestBody PriceRequest request) {
         log.info("[API] get prices for {}", request.getProductUrl());
-        List<PriceDto> prices = productService.getPrices(request.getProductUrl(), request.getPeriodInDays()).stream()
-                .map(PriceMapper::toDto)
-                .toList();
-        return new PriceResponse(prices);
+        return productService.getPrices(request.getProductUrl(), request.getPeriodInDays());
     }
 
     /**
@@ -81,11 +79,14 @@ public class ProductController {
      * @return статус
      */
     @PostMapping("/unsubscribe")
-    public StatusResponse unSubscribe(@RequestBody SubscribeRequest request) {
-        log.info("[API] start subscribe {}", request);
-        return userService.unSubscribe(request);
+    public StatusResponse unsubscribe(@RequestBody SubscribeRequest request) {
+        log.info("[API] start unsubscribe {}", request);
+        return userService.unsubscribe(request);
     }
 
+    // todo отписаться от всех товаров /unsubscribe-all
+
+    @Deprecated(since = "test send message to Andrew Bessonov")
     @GetMapping("/test")
     public void test() {
         botFeignClient.sendMessage(SendMessageRequest.builder()
