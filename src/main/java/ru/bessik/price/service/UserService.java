@@ -11,6 +11,8 @@ import ru.bessik.price.entity.User;
 import ru.bessik.price.repository.ProductRepository;
 import ru.bessik.price.repository.UserRepository;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -49,29 +51,43 @@ public class UserService {
     @Transactional
     public StatusResponse unSubscribe(SubscribeRequest request) {
 
-        if(!userRepository.findByTelegramId(request.getTelegramId()).isPresent()) {
+        Optional<User> userOptional = userRepository.findByTelegramId(request.getTelegramId());
+
+        if(userOptional.isEmpty()) {
+            log.error(String.format("unsubscribe not successfully, " +
+                    "user %s does not exists", userOptional));
             return StatusResponse.builder()
-                    .status(String.format("unsubscribe not successfully, " +
-                            "user %s does not exists", request.getTelegramId()))
+                    .status("Не удалось отписаться")
                     .build();
         }
 
-        User user = userRepository.findByTelegramId(request.getTelegramId()).get();
+        Optional<Product> productOptional = productRepository.findByUrl(request.getProductUrl());
 
-        if(!user.getSubscriptions().contains(request.getProductUrl())) {
+        if(productOptional.isEmpty()) {
+            log.error(String.format("unsubscribe not successfully, " +
+                    "subscribe %s does not exists", productOptional));
             return StatusResponse.builder()
-                    .status(String.format("unsubscribe not successfully, " +
-                            "subscribe %s does not exists for user %s", request.getProductUrl(), user))
+                    .status("Нет подписки на данный товар")
                     .build();
         }
 
-        String product = request.getProductUrl();
+        User user = userOptional.get();
+        Product product = productOptional.get();
+
+        if(!user.getSubscriptions().contains(product)) {
+            log.error(String.format("unsubscribe not successfully, " +
+                    "subscribe %s does not exists on user %s", product, user));
+            return StatusResponse.builder()
+                    .status("Вы не подписаны на данный товар")
+                    .build();
+        }
 
         user.getSubscriptions().remove(product);
         User savedUser = userRepository.save(user);
+        log.info(String.format("unsubscribed successfully %s", savedUser));
 
         return StatusResponse.builder()
-                .status(String.format("unsubscribed successfully %s", savedUser))
+                .status(String.format("Успешно отписались от %s", product))
                 .build();
     }
 
