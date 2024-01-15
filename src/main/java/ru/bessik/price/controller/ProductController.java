@@ -47,6 +47,18 @@ public class ProductController {
     }
 
     // todo метод getPrice для получения текущей цены (Серега)
+    /**
+     * Получить текущую цену.
+     *
+     * @param request ссылка на товар и период
+     * @return список цен за период
+     */
+    // пример запроса: localhost:8080/api/v1/product/price?url=http://piter-gsm.ru/
+    @PostMapping("/price") // Переделай на get запрос с поулчением параметра из ссылки
+    public PriceResponse getPrice(String url) {
+        log.info("[API] get price for {}", request.getProductUrl());
+        return productService.getPrices(request.getProductUrl(), 1);
+    }
 
     /**
      * Получить список цен за период по товару.
