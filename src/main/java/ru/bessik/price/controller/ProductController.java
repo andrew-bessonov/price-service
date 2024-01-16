@@ -85,6 +85,11 @@ public class ProductController {
     }
 
     // todo отписаться от всех товаров /unsubscribe-all
+    @PostMapping("/unsubscribeall")
+    public StatusResponse unsubscribeAll(@RequestBody UnsubscribeAllRequest request) {
+        log.info("[API] start unsubscribe all{}", request);
+        return userService.unsubscribeAll(request);
+    }
 
     @Deprecated(since = "test send message to Andrew Bessonov")
     @GetMapping("/test")
