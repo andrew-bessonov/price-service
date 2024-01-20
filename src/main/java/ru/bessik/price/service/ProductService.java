@@ -46,13 +46,10 @@ public class ProductService {
 
     @Transactional
     public void updateAll() {
-        List<Product> productList = IterableUtils.toList(productRepository.findAll());
-        List<Product> productsWithSubscribers = productList.stream()
-                .filter(product -> !product.getSubscribedUsers().isEmpty())
-                .toList();
+        List<Product> productList = productRepository.findAllSubscribedUsers();
 
         Random random = new Random();
-        for (Product product : productsWithSubscribers) {
+        for (Product product : productList) {
             log.info("update product info {}", product);
             try {
                 Thread.sleep(random.nextLong(5000));

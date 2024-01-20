@@ -90,11 +90,11 @@ public class ProductController {
         return userService.unsubscribeAll(request);
     }
 
-//    @PostMapping("/unsubscribeall2") // todo getMapping + pathVariable
-//    public StatusResponse unsubscribeAll2(@RequestBody UnsubscribeAllRequest request) {
-//        log.info("[API] start unsubscribe all{}", request);
-//        return userService.unsubscribeAll(request);
-//    }
+    @GetMapping("/unsubscribe-all2/{telegramId}") // todo getMapping + pathVariable
+    public StatusResponse unsubscribeAll2(@PathVariable String telegramId) {
+        log.info("[API] start unsubscribe all{}", telegramId);
+        return userService.unsubscribeAll2(telegramId);
+    }
 //
 //    ) // todo delete mapping + requestParam
 //    public StatusResponse unsubscribeAll3(@RequestBody UnsubscribeAllRequest request) {

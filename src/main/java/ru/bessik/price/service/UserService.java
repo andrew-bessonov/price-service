@@ -126,6 +126,31 @@ public class UserService {
         return new StatusResponse("Вы успешно отписались от всех товаров");
     }
 
+    @Transactional
+    public StatusResponse unsubscribeAll2(String telegramId) { //todo сразу принимать telegramId
+        Optional<User> userOptional = userRepository.findByTelegramId(telegramId);
+
+        if (userOptional.isEmpty()) {
+            log.error(String.format("unsubscribe not successfully, " +
+                    "user %s does not exists", telegramId));
+            return new StatusResponse("У вас нет текущих подписок");
+        }
+
+        User user = userOptional.get();
+
+        if (user.getSubscriptions().isEmpty()) {
+            log.error(String.format("unsubscribe not successfully, " +
+                    "user %s doesn't have subscriptions", telegramId));
+            return new StatusResponse("У вас нет текущих подписок");
+        }
+
+        user.getSubscriptions().clear();
+        User savedUser = userRepository.save(user);
+
+        log.info("all unsubscribed successfully {}", savedUser);
+        return new StatusResponse("Вы успешно отписались от всех товаров");
+    }
+
     private Product findOrCreateProduct(String productUrl) {
         return productRepository.findByUrl(productUrl)
                 .orElseGet(() -> Product.builder()
