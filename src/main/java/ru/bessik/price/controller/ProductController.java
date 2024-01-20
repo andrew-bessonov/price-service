@@ -84,12 +84,23 @@ public class ProductController {
         return userService.unsubscribe(request);
     }
 
-    // todo отписаться от всех товаров /unsubscribe-all
-    @PostMapping("/unsubscribeall")
+    @PostMapping("/unsubscribe-all")
     public StatusResponse unsubscribeAll(@RequestBody UnsubscribeAllRequest request) {
         log.info("[API] start unsubscribe all{}", request);
         return userService.unsubscribeAll(request);
     }
+
+//    @PostMapping("/unsubscribeall2") // todo getMapping + pathVariable
+//    public StatusResponse unsubscribeAll2(@RequestBody UnsubscribeAllRequest request) {
+//        log.info("[API] start unsubscribe all{}", request);
+//        return userService.unsubscribeAll(request);
+//    }
+//
+//    ) // todo delete mapping + requestParam
+//    public StatusResponse unsubscribeAll3(@RequestBody UnsubscribeAllRequest request) {
+//        log.info("[API] start unsubscribe all{}", request);
+//        return userService.unsubscribeAll(request);
+//    }
 
     @Deprecated(since = "test send message to Andrew Bessonov")
     @GetMapping("/test")

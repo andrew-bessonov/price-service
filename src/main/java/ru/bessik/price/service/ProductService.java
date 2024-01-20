@@ -13,6 +13,7 @@ import ru.bessik.price.repository.ProductRepository;
 import ru.bessik.price.utils.PriceMapper;
 import ru.bessik.price.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -45,9 +46,13 @@ public class ProductService {
 
     @Transactional
     public void updateAll() {
-        List<Product> products = IterableUtils.toList(productRepository.findAll()); // todo брать только те товары, на которые подписаны люди
+        List<Product> productList = IterableUtils.toList(productRepository.findAll());
+        List<Product> productsWithSubscribers = productList.stream()
+                .filter(product -> !product.getSubscribedUsers().isEmpty())
+                .toList();
+
         Random random = new Random();
-        for (Product product : products) {
+        for (Product product : productsWithSubscribers) {
             log.info("update product info {}", product);
             try {
                 Thread.sleep(random.nextLong(5000));

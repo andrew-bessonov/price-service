@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import ru.bessik.price.controller.dto.StatusResponse;
 import ru.bessik.price.controller.dto.SubscribeRequest;
 import ru.bessik.price.controller.dto.UnsubscribeAllRequest;
@@ -12,6 +13,8 @@ import ru.bessik.price.entity.User;
 import ru.bessik.price.repository.ProductRepository;
 import ru.bessik.price.repository.UserRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -92,14 +95,14 @@ public class UserService {
     }
 
     /**
-     * Отписаться от товара.<br>
+     * Отписаться от всех товаров.<br>
      * Если пользователя не было в БД - логируем
      *
      * @param request Данные для отписки
      * @return статус
      */
     @Transactional
-    public StatusResponse unsubscribeAll(UnsubscribeAllRequest request) {
+    public StatusResponse unsubscribeAll(UnsubscribeAllRequest request) { //todo сразу принимать elegramId
         Optional<User> userOptional = userRepository.findByTelegramId(request.getTelegramId());
 
         if (userOptional.isEmpty()) {
@@ -116,7 +119,7 @@ public class UserService {
             return new StatusResponse("У вас нет текущих подписок");
         }
 
-        user.setSubscriptions(null);
+        user.getSubscriptions().clear();
         User savedUser = userRepository.save(user);
 
         log.info("all unsubscribed successfully {}", savedUser);
