@@ -50,14 +50,14 @@ public class ProductController {
     /**
      * Получить текущую цену.
      *
-     * @param request ссылка на товар и период
-     * @return список цен за период
+     * @param url ссылка на товар и период
+     * @return последняя цена
      */
     // пример запроса: localhost:8080/api/v1/product/price?url=http://piter-gsm.ru/
-    @PostMapping("/price") // Переделай на get запрос с поулчением параметра из ссылки
-    public PriceResponse getPrice(String url) {
-        log.info("[API] get price for {}", request.getProductUrl());
-        return productService.getPrices(request.getProductUrl(), 1);
+    @GetMapping("/price") // Переделай на get запрос с поулчением параметра из ссылки
+    public PriceResponse getPrice(@RequestParam("url") String url) { //дальше можно работать с String url
+        log.info("[API] get price for {}", url);
+        return productService.getPrice(url);
     }
 
     /**
