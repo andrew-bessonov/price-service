@@ -16,61 +16,7 @@ import ru.bessik.price.service.UserService;
 public class ProductController {
 
     private final UserService userService;
-    private final ProductService productService;
     private final TelegramBotFeignClient botFeignClient;
-
-    //todo методы update, updateAll, getPrice, getPrices, unsubscribe-all перенести в новый контроллер PriceController "/api/v1/price"
-
-    /**
-     * Обновить данные о товаре.
-     *
-     * @param request ссылка на товар
-     * @return статус
-     */
-    @PostMapping("/update")
-    public StatusResponse update(@RequestBody UpdatePriceRequest request) {
-        log.info("[API] update price {}", request.getProductUrl());
-        productService.update(request.getProductUrl());
-        return new StatusResponse("Цена успешно обновлена");
-    }
-
-    /**
-     * Обновить данные о всех товарах.
-     *
-     * @return статус
-     */
-    @PostMapping("/update-all")
-    public StatusResponse updateAll() {
-        log.info("[API] update all prices");
-        productService.updateAll();
-        return new StatusResponse("Цены успешно обновлены");
-    }
-
-    // todo метод getPrice для получения текущей цены (Серега)
-    /**
-     * Получить текущую цену.
-     *
-     * @param url ссылка на товар и период
-     * @return последняя цена
-     */
-    // пример запроса: localhost:8080/api/v1/product/price?url=http://piter-gsm.ru/
-    @GetMapping("/price") // Переделай на get запрос с поулчением параметра из ссылки
-    public PriceResponse getPrice(@RequestParam("url") String url) { //дальше можно работать с String url
-        log.info("[API] get price for {}", url);
-        return productService.getPrice(url);
-    }
-
-    /**
-     * Получить список цен за период по товару.
-     *
-     * @param request ссылка на товар и период
-     * @return список цен за период
-     */
-    @PostMapping("/prices")
-    public PriceResponse getPrices(@RequestBody PriceRequest request) {
-        log.info("[API] get prices for {}", request.getProductUrl());
-        return productService.getPrices(request.getProductUrl(), request.getPeriodInDays());
-    }
 
     /**
      * Подписаться на товар

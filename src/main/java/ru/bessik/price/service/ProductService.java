@@ -28,7 +28,7 @@ public class ProductService {
 
     @Transactional
     public PriceResponse getPrice(String productUrl){
-        Product product = productRepository.findByUrl(productUrl) //товар
+        Product product = productRepository.findByUrl(productUrl)
                 .orElseThrow();
         Price lastPrice = product.getPrices().getLast();
 
