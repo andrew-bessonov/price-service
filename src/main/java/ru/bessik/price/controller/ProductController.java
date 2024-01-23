@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.bessik.price.controller.dto.*;
 import ru.bessik.price.feign.TelegramBotFeignClient;
 import ru.bessik.price.feign.dto.SendMessageRequest;
-import ru.bessik.price.service.ProductService;
 import ru.bessik.price.service.UserService;
 
 @Slf4j
