@@ -3,7 +3,6 @@ package ru.bessik.price.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
@@ -11,8 +10,8 @@ import org.springframework.util.StringUtils;
 import ru.bessik.price.entity.Price;
 import ru.bessik.price.entity.Product;
 import ru.bessik.price.repository.ProductRepository;
+import ru.bessik.price.utils.Utils;
 
-import java.io.IOException;
 import java.time.LocalDate;
 
 @Slf4j
@@ -21,33 +20,27 @@ import java.time.LocalDate;
 public class PiterGsmService implements UpdatePriceService {
 
     private final ProductRepository productRepository;
-    private final NotificationService notificationService;
+
+    @Override
+    public String getSiteUrl() {
+        return "pitergsm.ru";
+    }
 
     @Override
     @Transactional
     public void update(Product product) {
         String url = product.getUrl();
-
-        Document document;
-        try {
-            document = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36")
-                    .referrer("http://www.google.com")
-                    .timeout(10000)
-                    .get();
-        } catch (IOException e) {
-            log.error("Не получилось достать данные с страницы {}", url, e);
+        Document document = Utils.getDocumentFromUrl(url);
+        if (document == null) {
             return;
         }
 
         Double price = getPrice(document, url);
-        String productName = getProductName(document, url);
-
-        if (price == null || productName == null) { // todo productName не обязательно?
-            log.warn("Не удалось получить необходимые данные с сайта (цена {}, название {}", price, productName);
+        if (price == null) {
             return;
         }
 
+        String productName = getProductName(document, url);
         if (product.getName() == null) {
             product.setName(productName);
         }
@@ -60,9 +53,7 @@ public class PiterGsmService implements UpdatePriceService {
         product.getPrices().add(priceEntity);
 
         Product updateProduct = productRepository.save(product);
-        log.info("success saved {} - {}", updateProduct, price);
-
-        notificationService.checkLastPriceIsLower(updateProduct);
+        log.info("new price success saved {} - {}", updateProduct, price);
     }
 
     private String getProductName(Document document, String url) {
@@ -81,7 +72,7 @@ public class PiterGsmService implements UpdatePriceService {
 
         if (priceElement == null) {
             log.error("Не найдена цена на странице {}", url);
-            return null;
+            return null; // todo заменить на кастомное исключение?
         }
 
         String priceString = StringUtils.deleteAny(priceElement.text(), " ");

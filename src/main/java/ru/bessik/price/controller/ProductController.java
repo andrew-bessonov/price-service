@@ -19,7 +19,7 @@ public class ProductController {
     private final ProductService productService;
     private final TelegramBotFeignClient botFeignClient;
 
-    //todo методы update, updateAll, getPrice, getPrices, unsubscribe-all перенести в новый контроллер PriceController "/api/v1/price"
+    //todo методы update, updateAll, getPrice, getPrices перенести в новый контроллер PriceController "/api/v1/price" (Серега)
 
     /**
      * Обновить данные о товаре.
@@ -45,6 +45,8 @@ public class ProductController {
         productService.updateAll();
         return new StatusResponse("Цены успешно обновлены");
     }
+
+    // todo метод для обновления всех цен только у одного пользователя: принимает telegramId (/update-on-user/{telegramId}) (Дамир) + телеграм бот сервис
 
     // todo метод getPrice для получения текущей цены (Серега)
 

@@ -21,11 +21,11 @@ CREATE TABLE price
     product_id SERIAL REFERENCES product (id)
 );
 
-CREATE TABLE users_product_relation
+CREATE TABLE user_subscriptions
 (
-    users_id   SERIAL,
+    user_id   SERIAL,
     product_id SERIAL,
-    FOREIGN KEY (users_id) REFERENCES users (id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (product_id) REFERENCES product (id),
-    UNIQUE (users_id, product_id)
+    UNIQUE (user_id, product_id)
 );

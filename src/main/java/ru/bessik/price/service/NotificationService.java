@@ -30,12 +30,12 @@ public class NotificationService {
      * @param product товар
      */
     public void checkLastPriceIsLower(Product product) {
-        List<Price> prices = Utils.getPrices(product, 30);
+        List<Price> prices = Utils.getPricesFromPeriod(product, 30);
         double minValue = prices.stream()
                 .mapToDouble(Price::getPrice)
                 .min()
                 .orElseThrow();
-        if (Double.compare(prices.getLast().getPrice(), minValue) <= 0) {
+        if (Double.compare(prices.getLast().getPrice(), minValue) > 0) {
             notify(product);
         }
     }
