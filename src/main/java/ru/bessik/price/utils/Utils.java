@@ -14,7 +14,7 @@ public class Utils {
     public static List<Price> getPrices(Product product, Integer periodInDays) {
         LocalDate startDate = LocalDate.now().minusDays(periodInDays);
         return product.getPrices().stream()
-                .filter(it -> it.getPriceDate().isAfter(startDate))
+                .filter(it -> it.getCurrentDate().isAfter(startDate))
                 .toList();
     }
 }

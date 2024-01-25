@@ -32,10 +32,10 @@ public class NotificationService {
     public void checkLastPriceIsLower(Product product) {
         List<Price> prices = Utils.getPrices(product, 30);
         double minValue = prices.stream()
-                .mapToDouble(Price::getPrice)
+                .mapToDouble(Price::getCurrentPrice)
                 .min()
                 .orElseThrow();
-        if (Double.compare(prices.getLast().getPrice(), minValue) <= 0) {
+        if (Double.compare(prices.getLast().getCurrentPrice(), minValue) <= 0) {
             notify(product);
         }
     }

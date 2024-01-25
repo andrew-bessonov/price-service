@@ -10,8 +10,8 @@ public class PriceMapper {
 
     public static PriceDto toDto(Price entity) {
         return PriceDto.builder()
-                .price(entity.getPrice())
-                .priceDate(entity.getPriceDate())
+                .currentPrice(entity.getCurrentPrice())
+                .currentDate(entity.getCurrentDate())
                 .build();
     }
 }

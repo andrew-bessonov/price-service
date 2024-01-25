@@ -12,10 +12,22 @@ import ru.bessik.price.service.ProductService;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/price")
+@RequestMapping("/api/v1")
 
 public class PriceController {
     private final ProductService productService;
+
+    /**
+     * Получить текущую цену.
+     *
+     * @param url ссылка на товар и период
+     * @return последняя цена
+     */
+    @GetMapping
+    public PriceResponse getPrice(@RequestParam("url") String url) {
+        log.info("[API] get price for {}", url);
+        return productService.getPrice(url);
+    }
 
     /**
      * Обновить данные о товаре.
@@ -31,30 +43,6 @@ public class PriceController {
     }
 
     /**
-     * Обновить данные о всех товарах.
-     *
-     * @return статус
-     */
-    @PostMapping("/update-all")
-    public StatusResponse updateAll() {
-        log.info("[API] update all prices");
-        productService.updateAll();
-        return new StatusResponse("Цены успешно обновлены");
-    }
-
-    /**
-     * Получить текущую цену.
-     *
-     * @param url ссылка на товар и период
-     * @return последняя цена
-     */
-    @GetMapping("/price")
-    public PriceResponse getPrice(@RequestParam("url") String url) {
-        log.info("[API] get price for {}", url);
-        return productService.getPrice(url);
-    }
-
-    /**
      * Получить список цен за период по товару.
      *
      * @param request ссылка на товар и период
@@ -64,5 +52,17 @@ public class PriceController {
     public PriceResponse getPrices(@RequestBody PriceRequest request) {
         log.info("[API] get prices for {}", request.getProductUrl());
         return productService.getPrices(request.getProductUrl(), request.getPeriodInDays());
+    }
+
+    /**
+     * Обновить данные о всех товарах.
+     *
+     * @return статус
+     */
+    @PostMapping("/update-all")
+    public StatusResponse updateAll() {
+        log.info("[API] update all prices");
+        productService.updateAll();
+        return new StatusResponse("Цены успешно обновлены");
     }
 }

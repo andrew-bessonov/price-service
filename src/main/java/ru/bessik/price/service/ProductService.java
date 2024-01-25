@@ -29,17 +29,10 @@ public class ProductService {
     @Transactional
     public PriceResponse getPrice(String productUrl){
         Product product = productRepository.findByUrl(productUrl)
-                .orElseThrow();
+                .orElseThrow(); // todo кастомное исключение
         Price lastPrice = product.getPrices().getLast();
-
-        PriceDto priceDto = PriceDto.builder()
-                .price(lastPrice.getPrice())
-                .priceDate(lastPrice.getPriceDate())
-                .build();
-        List<PriceDto> listPriceDto = new ArrayList<>();
-        listPriceDto.add(priceDto);
-
-        return new PriceResponse(listPriceDto);
+        PriceDto priceDto = PriceMapper.toDto(lastPrice);
+        return new PriceResponse(List.of(priceDto));
     }
 
     @Transactional
