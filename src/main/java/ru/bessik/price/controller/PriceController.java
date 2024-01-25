@@ -23,7 +23,7 @@ public class PriceController {
      * @param url ссылка на товар и период
      * @return последняя цена
      */
-    @GetMapping
+    @GetMapping("/price")
     public PriceResponse getPrice(@RequestParam("url") String url) {
         log.info("[API] get price for {}", url);
         return productService.getPrice(url);
