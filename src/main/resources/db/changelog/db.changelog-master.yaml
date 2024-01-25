@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/changelog.yaml
+  - changeSet:
+      id: 1
+      author: Andrew Bessonov
+      comment: first init table
+      changes:
+        - sqlFile:
+            path: db/init/M-01.sql
