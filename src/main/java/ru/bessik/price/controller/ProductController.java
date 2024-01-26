@@ -96,7 +96,24 @@ public class ProductController {
         return userService.unsubscribe(request);
     }
 
-    // todo отписаться от всех товаров /unsubscribe-all
+    @PostMapping("/unsubscribe-all")
+    public StatusResponse unsubscribeAll(@RequestBody UnsubscribeAllRequest request) {
+        log.info("[API] start unsubscribe all{}", request);
+        return userService.unsubscribeAll2(request.getTelegramId());
+    }
+
+    @GetMapping("/unsubscribe-all2/{telegramId}") // todo getMapping + pathVariable
+    public StatusResponse unsubscribeAll2(@PathVariable String telegramId) {
+        log.info("[API] start unsubscribe all{}", telegramId);
+        return userService.unsubscribeAll2(telegramId);
+    }
+
+    // todo delete mapping + requestParam
+    @DeleteMapping(value = "/unsubscribe-all3{telegramId}")// todo delete mapping + requestParam
+    public StatusResponse unsubscribeAll3(@RequestParam (name = "telegramId") String telegramId) {
+        log.info("[API] start unsubscribe all{}", telegramId);
+        return userService.unsubscribeAll2(telegramId);
+    }
 
 
     @Deprecated(since = "test send message to Andrew Bessonov")
