@@ -6,9 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.bessik.price.controller.dto.*;
 import ru.bessik.price.feign.TelegramBotFeignClient;
 import ru.bessik.price.feign.dto.SendMessageRequest;
-import ru.bessik.price.repository.UserRepository;
 import ru.bessik.price.service.ProductService;
-import ru.bessik.price.service.UpdatePriceService;
 import ru.bessik.price.service.UserService;
 
 @Slf4j
@@ -96,23 +94,23 @@ public class ProductController {
         return userService.unsubscribe(request);
     }
 
-    @PostMapping("/unsubscribe-all")
-    public StatusResponse unsubscribeAll(@RequestBody UnsubscribeAllRequest request) {
-        log.info("[API] start unsubscribe all{}", request);
-        return userService.unsubscribeAll2(request.getTelegramId());
-    }
+//    @PostMapping("/unsubscribe-all")
+//    public StatusResponse unsubscribeAll(@RequestBody UnsubscribeAllRequest request) {
+//        log.info("[API] start unsubscribe all{}", request);
+//        return userService.unsubscribeAll2(request.getTelegramId());
+//    }
+//
+//    @GetMapping("/unsubscribe-all2/{telegramId}")
+//    public StatusResponse unsubscribeAll2(@PathVariable String telegramId) {
+//        log.info("[API] start unsubscribe all{}", telegramId);
+//        return userService.unsubscribeAll2(telegramId);
+//    }
 
-    @GetMapping("/unsubscribe-all2/{telegramId}") // todo getMapping + pathVariable
-    public StatusResponse unsubscribeAll2(@PathVariable String telegramId) {
+    //delete mapping + requestParam
+    @DeleteMapping(value = "/unsubscribe-all")
+    public StatusResponse unsubscribeAll(@RequestParam (name = "telegramId") String telegramId) {
         log.info("[API] start unsubscribe all{}", telegramId);
-        return userService.unsubscribeAll2(telegramId);
-    }
-
-    // todo delete mapping + requestParam
-    @DeleteMapping(value = "/unsubscribe-all3{telegramId}")// todo delete mapping + requestParam
-    public StatusResponse unsubscribeAll3(@RequestParam (name = "telegramId") String telegramId) {
-        log.info("[API] start unsubscribe all{}", telegramId);
-        return userService.unsubscribeAll2(telegramId);
+        return userService.unsubscribeAll(telegramId);
     }
 
 
