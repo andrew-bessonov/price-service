@@ -47,7 +47,11 @@ public class ProductController {
     }
 
     // todo метод для обновления всех цен только у одного пользователя: принимает telegramId (/update-on-user/{telegramId}) (Дамир) + телеграм бот сервис
-
+    /**
+     * Обновить цены всех товаров пользователя.
+     *
+     * @return статус
+     */
     @PostMapping("/update-all/{telegramId}")
     public StatusResponse updateAllForUser(@PathVariable String telegramId) {
         log.info("[API] update all prices for user {}",telegramId);
@@ -106,7 +110,11 @@ public class ProductController {
 //        return userService.unsubscribeAll2(telegramId);
 //    }
 
-    //delete mapping + requestParam
+    /**
+     * Отисать пользователя от всех товаров
+     *
+     * @return telegramId для отписки из запроса
+     */
     @DeleteMapping(value = "/unsubscribe-all")
     public StatusResponse unsubscribeAll(@RequestParam (name = "telegramId") String telegramId) {
         log.info("[API] start unsubscribe all{}", telegramId);
