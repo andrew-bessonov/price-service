@@ -4,12 +4,15 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.IterableUtils;
+import org.hibernate.sql.Update;
 import org.springframework.stereotype.Service;
 import ru.bessik.price.controller.dto.PriceDto;
 import ru.bessik.price.controller.dto.PriceResponse;
 import ru.bessik.price.entity.Price;
 import ru.bessik.price.entity.Product;
+import ru.bessik.price.entity.User;
 import ru.bessik.price.repository.ProductRepository;
+import ru.bessik.price.repository.UserRepository;
 import ru.bessik.price.utils.PriceMapper;
 import ru.bessik.price.utils.Utils;
 
@@ -22,6 +25,7 @@ import java.util.Random;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
     private final UpdatePriceServiceFactory updatePriceServiceFactory;
     private final NotificationService notificationService;
 
@@ -45,6 +49,26 @@ public class ProductService {
         UpdatePriceService service = updatePriceServiceFactory.getService(url);
         service.update(product);
         notificationService.checkLastPriceIsLower(product);
+    }
+
+    @Transactional
+    public void updateAllForUser(String telegramId) {
+        User user = userRepository.findByTelegramId(telegramId)
+                .orElseThrow();
+        List<Product> userSubscriptions = user.getSubscriptions();
+        for (Product product : userSubscriptions) {
+            threadSleepRandomTime();
+            log.info("update for user {} product info {}", telegramId, product);
+
+            try {
+                UpdatePriceService service = updatePriceServiceFactory.getService(product.getUrl());
+                service.update(product);
+                notificationService.checkLastPriceIsLower(product);
+            } catch (Exception e) {
+                log.error("Error when update for user {} product {}", telegramId, product, e);
+            }
+        }
+
     }
 
     @Transactional

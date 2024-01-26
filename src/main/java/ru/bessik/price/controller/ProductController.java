@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.bessik.price.controller.dto.*;
 import ru.bessik.price.feign.TelegramBotFeignClient;
 import ru.bessik.price.feign.dto.SendMessageRequest;
+import ru.bessik.price.repository.UserRepository;
 import ru.bessik.price.service.ProductService;
+import ru.bessik.price.service.UpdatePriceService;
 import ru.bessik.price.service.UserService;
 
 @Slf4j
@@ -48,6 +50,14 @@ public class ProductController {
 
     // todo метод для обновления всех цен только у одного пользователя: принимает telegramId (/update-on-user/{telegramId}) (Дамир) + телеграм бот сервис
 
+    @PostMapping("/update-all/{telegramId}")
+    public StatusResponse updateAllForUser(@PathVariable String telegramId) {
+        log.info("[API] update all prices for user {}",telegramId);
+        productService.updateAllForUser(telegramId);
+        return new StatusResponse("Цены успешно обновлены");
+
+    }
+
     // todo метод getPrice для получения текущей цены (Серега)
 
     /**
@@ -87,6 +97,7 @@ public class ProductController {
     }
 
     // todo отписаться от всех товаров /unsubscribe-all
+
 
     @Deprecated(since = "test send message to Andrew Bessonov")
     @GetMapping("/test")
