@@ -35,7 +35,7 @@ public class PriceController {
      * @param request ссылка на товар
      * @return статус
      */
-    @PostMapping("/update")
+    @PostMapping("/price/update")
     public StatusResponse update(@RequestBody UpdatePriceRequest request) {
         log.info("[API] update price {}", request.getProductUrl());
         productService.update(request.getProductUrl());
@@ -59,7 +59,7 @@ public class PriceController {
      *
      * @return статус
      */
-    @PostMapping("/update-all")
+    @PostMapping("/prices/update")
     public StatusResponse updateAll() {
         log.info("[API] update all prices");
         productService.updateAll();
