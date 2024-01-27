@@ -18,18 +18,6 @@ public class ProductController {
     private final TelegramBotFeignClient botFeignClient;
 
     // todo метод для обновления всех цен только у одного пользователя: принимает telegramId (/update-on-user/{telegramId}) (Дамир) + телеграм бот сервис
-    /**
-     * Обновить цены всех товаров пользователя.
-     *
-     * @return статус
-     */
-    @PostMapping("/update-all/{telegramId}")
-    public StatusResponse updateAllForUser(@PathVariable String telegramId) {
-        log.info("[API] update all prices for user {}",telegramId);
-        productService.updateAllForUser(telegramId);
-        return new StatusResponse("Цены успешно обновлены");
-
-    }
 
     /**
      * Подписаться на товар
@@ -55,25 +43,13 @@ public class ProductController {
         return userService.unsubscribe(request);
     }
 
-//    @PostMapping("/unsubscribe-all")
-//    public StatusResponse unsubscribeAll(@RequestBody UnsubscribeAllRequest request) {
-//        log.info("[API] start unsubscribe all{}", request);
-//        return userService.unsubscribeAll2(request.getTelegramId());
-//    }
-//
-//    @GetMapping("/unsubscribe-all2/{telegramId}")
-//    public StatusResponse unsubscribeAll2(@PathVariable String telegramId) {
-//        log.info("[API] start unsubscribe all{}", telegramId);
-//        return userService.unsubscribeAll2(telegramId);
-//    }
-
     /**
      * Отисать пользователя от всех товаров
      *
      * @return telegramId для отписки из запроса
      */
     @DeleteMapping(value = "/unsubscribe-all")
-    public StatusResponse unsubscribeAll(@RequestParam (name = "telegramId") String telegramId) {
+    public StatusResponse unsubscribeAll(@RequestParam(name = "telegramId") String telegramId) {
         log.info("[API] start unsubscribe all{}", telegramId);
         return userService.unsubscribeAll(telegramId);
     }

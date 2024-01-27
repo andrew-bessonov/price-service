@@ -32,7 +32,7 @@ public class ProductService {
 
 
     @Transactional
-    public PriceResponse getPrice(String productUrl){
+    public PriceResponse getPrice(String productUrl) {
         Product product = productRepository.findByUrl(productUrl)
                 .orElseThrow(); // todo кастомное исключение
         Price lastPrice = product.getPrices().getLast();
@@ -65,7 +65,7 @@ public class ProductService {
     @Transactional
     public void updateAllForUser(String telegramId) {
         User user = userRepository.findByTelegramId(telegramId)
-                .orElseThrow();
+                .orElseThrow(); // todo не копировать реализацию, лучше вынести в отдельный
         List<Product> userSubscriptions = user.getSubscriptions();
         for (Product product : userSubscriptions) {
             threadSleepRandomTime();
