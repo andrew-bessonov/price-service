@@ -65,4 +65,17 @@ public class PriceController {
         productService.updateAll();
         return new StatusResponse("Цены успешно обновлены");
     }
+
+    /**
+     * Обновить цены всех товаров пользователя.
+     *
+     * @return статус
+     */
+    @PostMapping("/update-all/{telegramId}")
+    public StatusResponse updateAllForUser(@PathVariable String telegramId) {
+        log.info("[API] update all prices for user {}", telegramId);
+        productService.updateAllForUser(telegramId);
+        return new StatusResponse("Цены успешно обновлены");
+
+    }
 }

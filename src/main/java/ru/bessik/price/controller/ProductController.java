@@ -43,7 +43,17 @@ public class ProductController {
         return userService.unsubscribe(request);
     }
 
-    // todo отписаться от всех товаров /unsubscribe-all
+    /**
+     * Отисать пользователя от всех товаров
+     *
+     * @return telegramId для отписки из запроса
+     */
+    @DeleteMapping(value = "/unsubscribe-all")
+    public StatusResponse unsubscribeAll(@RequestParam(name = "telegramId") String telegramId) {
+        log.info("[API] start unsubscribe all{}", telegramId);
+        return userService.unsubscribeAll(telegramId);
+    }
+
 
     @Deprecated(since = "test send message to Andrew Bessonov")
     @GetMapping("/test")

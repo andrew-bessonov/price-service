@@ -10,7 +10,6 @@ import ru.bessik.price.entity.Product;
 import ru.bessik.price.entity.User;
 import ru.bessik.price.repository.ProductRepository;
 import ru.bessik.price.repository.UserRepository;
-
 import java.util.Optional;
 
 @Slf4j
@@ -75,7 +74,7 @@ public class UserService {
 
         if (userOptional.isEmpty()) {
             log.error(String.format("unsubscribe not successfully, " +
-                    "user %s does not exists", userOptional));
+                    "user %s does not exists", request.getTelegramId()));
             return new StatusResponse("У вас нет текущих подписок");
         }
 
@@ -83,7 +82,7 @@ public class UserService {
 
         if (productOptional.isEmpty()) {
             log.error(String.format("unsubscribe not successfully, " +
-                    "product %s does not exists", productOptional));
+                    "product %s does not exists", request.getProductUrl()));
             return new StatusResponse("Нет подписки на данный товар");
         }
 
@@ -105,6 +104,38 @@ public class UserService {
                 "Вы успешно отписались";
 
         return new StatusResponse(responseMessage);
+    }
+
+    /**
+     * Отписаться от всех товаров.<br>
+     * Если пользователя не было в БД - логируем
+     *
+     * @param telegramId Данные для отписки
+     * @return статус
+     */
+    @Transactional
+    public StatusResponse unsubscribeAll(String telegramId) {
+        Optional<User> userOptional = userRepository.findByTelegramId(telegramId);
+
+        if (userOptional.isEmpty()) {
+            log.error(String.format("unsubscribe not successfully, " +
+                    "user %s does not exists", telegramId));
+            return new StatusResponse("У вас нет текущих подписок");
+        }
+
+        User user = userOptional.get();
+
+        if (user.getSubscriptions().isEmpty()) {
+            log.error(String.format("unsubscribe not successfully, " +
+                    "user %s doesn't have subscriptions", telegramId));
+            return new StatusResponse("У вас нет текущих подписок");
+        }
+
+        user.getSubscriptions().clear();
+        User savedUser = userRepository.save(user);
+
+        log.info("all unsubscribed successfully {}", savedUser);
+        return new StatusResponse("Вы успешно отписались от всех товаров");
     }
 
     private Product findOrCreateProduct(String productUrl) {
