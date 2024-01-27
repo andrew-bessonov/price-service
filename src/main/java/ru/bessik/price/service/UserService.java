@@ -20,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final UpdatePriceServiceFactory updatePriceServiceFactory;
 
     /**
      * Подписаться на товар.<br>
@@ -30,6 +31,10 @@ public class UserService {
      */
     @Transactional
     public StatusResponse subscribe(SubscribeRequest request) {
+        if (!siteIsSupported(request.getProductUrl())) {
+            return new StatusResponse("Сайт не поддерживается");
+        }
+
         User user = findOrCreateUser(request.getTelegramId());
         Product product = findOrCreateProduct(request.getProductUrl());
 
@@ -43,6 +48,18 @@ public class UserService {
 
         log.info("subscribed successfully {}", request);
         return new StatusResponse("Подписка успешно оформлена, обновление цен каждый день");
+    }
+
+    private boolean siteIsSupported(String productUrl) {
+        try {
+            UpdatePriceService service = updatePriceServiceFactory.getService(productUrl);
+            if (service != null) {
+                return true;
+            }
+        } catch (Exception e) {
+            log.warn("site is not supported {}", productUrl);
+        }
+        return false;
     }
 
     /**
@@ -83,9 +100,9 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         log.info("unsubscribed successfully {}", savedUser);
-        String responseMessage = product.getName() == null ?
-                "Вы успешно отписались" :
-                String.format("Вы успешно отписались от %s", product);
+        String responseMessage = product.getName() != null ?
+                String.format("Вы успешно отписались от %s", product.getName()) :
+                "Вы успешно отписались";
 
         return new StatusResponse(responseMessage);
     }

@@ -23,7 +23,8 @@ import java.util.Random;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final UpdatePriceService updatePriceService;
+    private final UpdatePriceServiceFactory updatePriceServiceFactory;
+    private final NotificationService notificationService;
 
 
     @Transactional
@@ -40,7 +41,7 @@ public class ProductService {
         Product product = productRepository.findByUrl(productUrl)
                 .orElseThrow();
 
-        List<Price> prices = Utils.getPrices(product, periodInDays);
+        List<Price> prices = Utils.getPricesFromPeriod(product, periodInDays);
         List<PriceDto> priceDtos = prices.stream()
                 .map(PriceMapper::toDto)
                 .toList();
@@ -50,22 +51,36 @@ public class ProductService {
 
     @Transactional
     public void update(String url) {
-        updatePriceService.update(productRepository.findByUrl(url)
-                .orElseThrow());
+        Product product = productRepository.findByUrl(url)
+                .orElseThrow();
+        UpdatePriceService service = updatePriceServiceFactory.getService(url);
+        service.update(product);
+        notificationService.checkLastPriceIsLower(product);
     }
 
     @Transactional
-    public void updateAll() {
-        List<Product> products = IterableUtils.toList(productRepository.findAll()); // todo брать только те товары, на которые подписаны люди
-        Random random = new Random();
+    public void updateAll() { // todo подумать над механизмом ретрая (Андрей)
+        List<Product> products = IterableUtils.toList(productRepository.findAllSubscribedProduct());
         for (Product product : products) {
+            threadSleepRandomTime();
             log.info("update product info {}", product);
+
             try {
-                Thread.sleep(random.nextLong(5000));
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                UpdatePriceService service = updatePriceServiceFactory.getService(product.getUrl());
+                service.update(product);
+                notificationService.checkLastPriceIsLower(product);
+            } catch (Exception e) {
+                log.error("Error when update product {}", product, e);
             }
-            updatePriceService.update(product);
+        }
+    }
+
+    private void threadSleepRandomTime() {
+        Random random = new Random();
+        try {
+            Thread.sleep(random.nextLong(5000));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }
