@@ -16,10 +16,10 @@ public class PriceDto {
     /**
      * Цена товара
      */
-    private Double price;
+    private Double currentPrice;
 
     /**
      * Дата
      */
-    private LocalDate priceDate;
+    private LocalDate currentDate;
 }

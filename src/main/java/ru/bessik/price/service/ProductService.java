@@ -13,6 +13,7 @@ import ru.bessik.price.repository.ProductRepository;
 import ru.bessik.price.utils.PriceMapper;
 import ru.bessik.price.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -24,6 +25,16 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UpdatePriceServiceFactory updatePriceServiceFactory;
     private final NotificationService notificationService;
+
+
+    @Transactional
+    public PriceResponse getPrice(String productUrl){
+        Product product = productRepository.findByUrl(productUrl)
+                .orElseThrow(); // todo кастомное исключение
+        Price lastPrice = product.getPrices().getLast();
+        PriceDto priceDto = PriceMapper.toDto(lastPrice);
+        return new PriceResponse(List.of(priceDto));
+    }
 
     @Transactional
     public PriceResponse getPrices(String productUrl, Integer periodInDays) {
