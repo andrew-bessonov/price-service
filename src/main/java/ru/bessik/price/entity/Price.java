@@ -24,12 +24,12 @@ public class Price {
     /**
      * Цена товара
      */
-    private Double price;
+    private Double currentPrice;
 
     /**
      * Дата
      */
-    private LocalDate priceDate;
+    private LocalDate currentDate;
 
     /**
      * Товар
@@ -41,6 +41,6 @@ public class Price {
 
     @Override
     public String toString() {
-        return String.format("%sр. от %s", getPrice(), getPriceDate());
+        return String.format("%sр. от %s", getCurrentPrice(), getCurrentDate());
     }
 }

@@ -3,7 +3,7 @@ databaseChangeLog:
   - changeSet:
       id: 1
       author: Andrew Bessonov
-      comment: first init table
+      comment: first init tables
       changes:
         - sqlFile:
-            path: db/init/M-01.sql
+            path: db/sql/M-01.sql
