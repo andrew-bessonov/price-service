@@ -71,7 +71,7 @@ public class PriceController {
      *
      * @return статус
      */
-    @PostMapping("/update-all/{telegramId}")
+    @PostMapping("/prices/update-all/{telegramId}")
     public StatusResponse updateAllForUser(@PathVariable String telegramId) {
         log.info("[API] update all prices for user {}", telegramId);
         productService.updateAllForUser(telegramId);
