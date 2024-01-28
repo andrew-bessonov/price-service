@@ -46,8 +46,8 @@ public class PiterGsmService implements UpdatePriceService {
         }
 
         Price priceEntity = Price.builder()
-                .price(price)
-                .priceDate(LocalDate.now())
+                .currentPrice(price)
+                .currentDate(LocalDate.now())
                 .product(product)
                 .build();
         product.getPrices().add(priceEntity);

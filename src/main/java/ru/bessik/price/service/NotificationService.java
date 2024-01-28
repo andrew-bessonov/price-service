@@ -10,6 +10,7 @@ import ru.bessik.price.feign.TelegramBotFeignClient;
 import ru.bessik.price.feign.dto.SendMessageRequest;
 import ru.bessik.price.feign.dto.SendMessageResponse;
 import ru.bessik.price.feign.dto.SendMessageStatus;
+import ru.bessik.price.properties.AppProperties;
 import ru.bessik.price.utils.Utils;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class NotificationService {
     private static final String MESSAGE_TEXT = "Изменилась цена на товар %s, \nСейчас самая низкая за последний месяц (%s)";
 
     private final TelegramBotFeignClient telegramBotFeignClient;
+    private final AppProperties appProperties;
 
     /**
      * Проверить последнюю цену на самую низкую за период<br>
@@ -30,7 +32,7 @@ public class NotificationService {
      * @param product товар
      */
     public void checkLastPriceIsLower(Product product) {
-        List<Price> prices = Utils.getPricesFromPeriod(product, 30);
+        List<Price> prices = Utils.getPricesFromPeriod(product, appProperties.getPeriod());
         double minValue = prices.stream()
                 .mapToDouble(Price::getCurrentPrice)
                 .min()
@@ -53,7 +55,7 @@ public class NotificationService {
                 SendMessageResponse sendMessageResponse = telegramBotFeignClient.sendMessage(SendMessageRequest.builder()
                         .telegramId(telegramId)
                         .message(message)
-                        .build());
+                        .build()); // todo переделать на кафку
                 if (SendMessageStatus.ERROR == sendMessageResponse.getStatus()) {
                     log.error("failed to send message to client {} in telegram", telegramId);
                 }

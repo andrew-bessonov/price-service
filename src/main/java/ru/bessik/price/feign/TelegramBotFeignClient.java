@@ -7,7 +7,7 @@ import ru.bessik.price.feign.dto.SendMessageRequest;
 import ru.bessik.price.feign.dto.SendMessageResponse;
 
 @FeignClient(name = "telegram-bot-service",
-        url = "http://localhost:8081",
+        url = "#{feignProperties.telegramBotService}",
         path = "/api/v1")
 public interface TelegramBotFeignClient {
 

@@ -13,7 +13,7 @@ public class DnsService implements UpdatePriceService {
     @Override
     public String getSiteUrl() {
         return "www.dns-shop.ru";
-    }
+    } // todo вырезать www
 
     @Override
     public void update(Product product) {
