@@ -7,3 +7,6 @@ databaseChangeLog:
       changes:
         - sqlFile:
             path: db/sql/M-01.sql
+      rollback:
+        - sqlFile:
+            path: db/rollback/R-01.sql

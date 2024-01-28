@@ -1,0 +1,27 @@
+version: '3.9'
+
+networks:
+  default:
+    name: backend
+
+services:
+  price-service:
+    image: 'price-service:latest'
+    build: ./
+    ports:
+      - "8080-8080" # Закрыть после тестов
+    container_name: price-service
+    environment:
+      - DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - DATASOURCE_USERNAME=bestprice
+      - DATASOURCE_PASSWORD=m4hq3{H5$o2*
+      - TELEGRAM_BOT_SERVICE_URL=telegram-bot-service:8080
+
+  postgres:
+    image: "postgres:latest"
+    container_name: "db"
+    environment:
+      - "POSTGRES_USER=bestprice"
+      - "POSTGRES_PASSWORD=m4hq3{H5$o2*"
+    ports:
+      - "5432:5432" # Закрыть после тестов

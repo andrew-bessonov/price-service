@@ -3,9 +3,8 @@ package ru.bessik.price.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.bessik.price.controller.dto.*;
-import ru.bessik.price.feign.TelegramBotFeignClient;
-import ru.bessik.price.feign.dto.SendMessageRequest;
+import ru.bessik.price.controller.dto.StatusResponse;
+import ru.bessik.price.controller.dto.SubscribeRequest;
 import ru.bessik.price.service.UserService;
 
 @Slf4j
@@ -15,7 +14,6 @@ import ru.bessik.price.service.UserService;
 public class ProductController {
 
     private final UserService userService;
-    private final TelegramBotFeignClient botFeignClient;
 
     // todo метод для обновления всех цен только у одного пользователя: принимает telegramId (/update-on-user/{telegramId}) (Дамир) + телеграм бот сервис
 
@@ -52,15 +50,5 @@ public class ProductController {
     public StatusResponse unsubscribeAll(@RequestParam(name = "telegramId") String telegramId) {
         log.info("[API] start unsubscribe all{}", telegramId);
         return userService.unsubscribeAll(telegramId);
-    }
-
-
-    @Deprecated(since = "test send message to Andrew Bessonov")
-    @GetMapping("/test")
-    public void test() {
-        botFeignClient.sendMessage(SendMessageRequest.builder()
-                .telegramId("375183651")
-                .message("test")
-                .build());
     }
 }

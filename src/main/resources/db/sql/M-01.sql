@@ -16,7 +16,7 @@ CREATE TABLE product
 CREATE TABLE price
 (
     id         SERIAL PRIMARY KEY,
-    price      DOUBLE PRECISION,
+    current_price      DOUBLE PRECISION,
     price_date DATE,
     product_id SERIAL REFERENCES product (id)
 );

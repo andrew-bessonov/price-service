@@ -29,6 +29,7 @@ public class Price {
     /**
      * Дата
      */
+    @Column(name = "price_date")
     private LocalDate currentDate;
 
     /**
