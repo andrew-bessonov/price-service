@@ -14,8 +14,8 @@ services:
       PGDATA: "/postgresql/data/pgdata"
     volumes:
       - price-data:/postgresql/data
-    expose:
-      - 5432
+    ports:
+      - "5432:5432" # Закрыть после тестов
 
   price-service:
     depends_on:
@@ -23,7 +23,7 @@ services:
     image: 'price-service:latest'
     build: ./
     ports:
-      - "8080-8080" # Закрыть после тестов
+      - "8080:8080" # Закрыть после тестов
     container_name: price-service
     env_file:
       - .env
