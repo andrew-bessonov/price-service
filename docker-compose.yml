@@ -5,7 +5,21 @@ networks:
     name: backend
 
 services:
+  postgres:
+    image: "postgres:16"
+    container_name: "db"
+    env_file:
+      - .env
+    environment:
+      PGDATA: "/postgresql/data/pgdata"
+    volumes:
+      - price-data:/postgresql/data
+    ports:
+      - "5432:5432" # Закрыть после тестов
+
   price-service:
+    depends_on:
+      - postgres
     image: 'price-service:latest'
     build: ./
     ports:
@@ -14,15 +28,10 @@ services:
     env_file:
       - .env
     environment:
-      - DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
       - DATASOURCE_USERNAME=${POSTGRES_USER}
       - DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - TELEGRAM_BOT_SERVICE_URL=telegram-bot-service:8080
 
-  postgres:
-    image: "postgres:latest"
-    container_name: "db"
-    env_file:
-      - .env
-    ports:
-      - "5432:5432" # Закрыть после тестов
+volumes:
+  price-data:

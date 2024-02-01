@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.IterableUtils;
-import org.hibernate.sql.Update;
 import org.springframework.stereotype.Service;
 import ru.bessik.price.controller.dto.PriceDto;
 import ru.bessik.price.controller.dto.PriceResponse;
@@ -16,7 +15,6 @@ import ru.bessik.price.repository.UserRepository;
 import ru.bessik.price.utils.PriceMapper;
 import ru.bessik.price.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -59,7 +57,7 @@ public class ProductService {
                 .orElseThrow();
         UpdatePriceService service = updatePriceServiceFactory.getService(url);
         service.update(product);
-        notificationService.checkLastPriceIsLower(product);
+        notificationService.checkLastPriceIsBest(product);
     }
 
     @Transactional
@@ -74,7 +72,7 @@ public class ProductService {
             try {
                 UpdatePriceService service = updatePriceServiceFactory.getService(product.getUrl());
                 service.update(product);
-                notificationService.checkLastPriceIsLower(product);
+                notificationService.checkLastPriceIsBest(product);
             } catch (Exception e) {
                 log.error("Error when update for user {} product {}", telegramId, product, e);
             }
@@ -92,7 +90,7 @@ public class ProductService {
             try {
                 UpdatePriceService service = updatePriceServiceFactory.getService(product.getUrl());
                 service.update(product);
-                notificationService.checkLastPriceIsLower(product);
+                notificationService.checkLastPriceIsBest(product);
             } catch (Exception e) {
                 log.error("Error when update product {}", product, e);
             }

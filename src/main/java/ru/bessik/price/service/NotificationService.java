@@ -31,13 +31,20 @@ public class NotificationService {
      *
      * @param product товар
      */
-    public void checkLastPriceIsLower(Product product) {
-        List<Price> prices = Utils.getPricesFromPeriod(product, appProperties.getPeriod());
-        double minValue = prices.stream()
-                .mapToDouble(Price::getCurrentPrice)
-                .min()
-                .orElseThrow();
-        if (Double.compare(prices.getLast().getCurrentPrice(), minValue) > 0) {
+    public void checkLastPriceIsBest(Product product) {
+        List<Price> pricesFromPeriod = Utils.getPricesFromPeriod(product, appProperties.getPeriod());
+        if (pricesFromPeriod.size() < 2) {
+            return;
+        }
+
+        Double minValue = minValueExcludeLast(pricesFromPeriod);
+        Double lastValue = pricesFromPeriod.getLast().getCurrentPrice();
+
+        if (Double.compare(minValue, lastValue) == 0) {
+            return;
+        }
+
+        if (Double.compare(lastValue, minValue) < 0) {
             notify(product);
         }
     }
@@ -63,5 +70,20 @@ public class NotificationService {
                 log.error("Не удалось отправить сообщение", e);
             }
         }
+    }
+
+    private Double minValueExcludeLast(List<Price> priceList) {
+        List<Double> prices = priceList.stream()
+                .map(Price::getCurrentPrice)
+                .toList();
+
+        Double minValue = Double.MAX_VALUE;
+        for (int i = 0; i < prices.size() - 1; i++) {
+            Double currentValue = prices.get(i);
+            if (currentValue < minValue) {
+                minValue = currentValue;
+            }
+        }
+        return minValue;
     }
 }

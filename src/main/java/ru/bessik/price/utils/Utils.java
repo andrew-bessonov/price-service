@@ -10,6 +10,7 @@ import ru.bessik.price.entity.Product;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +25,7 @@ public class Utils {
         LocalDate startDate = LocalDate.now().minusDays(periodInDays);
         return product.getPrices().stream()
                 .filter(it -> it.getCurrentDate().isAfter(startDate))
+                .sorted(Comparator.comparing(Price::getCurrentDate))
                 .toList();
     }
 
