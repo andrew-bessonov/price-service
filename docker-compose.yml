@@ -16,8 +16,6 @@ services:
       - price-data:/postgresql/data
     ports:
       - "5432:5432" # Закрыть после тестов
-    expose:
-      - 5432
 
   price-service:
     depends_on:
