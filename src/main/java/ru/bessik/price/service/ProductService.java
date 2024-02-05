@@ -63,26 +63,13 @@ public class ProductService {
     @Transactional
     public void updateAllForUser(String telegramId) {
         User user = userRepository.findByTelegramId(telegramId)
-                .orElseThrow(); // todo не копировать реализацию, лучше вынести в отдельный
-        List<Product> userSubscriptions = user.getSubscriptions();
-        for (Product product : userSubscriptions) {
-            threadSleepRandomTime();
-            log.info("update for user {} product info {}", telegramId, product);
-
-            try {
-                UpdatePriceService service = updatePriceServiceFactory.getService(product.getUrl());
-                service.update(product);
-                notificationService.checkLastPriceIsBest(product);
-            } catch (Exception e) {
-                log.error("Error when update for user {} product {}", telegramId, product, e);
-            }
-        }
+                .orElseThrow();
+        List<Product> products = user.getSubscriptions();
+        updateAllUniversalMethod(products);
 
     }
 
-    @Transactional
-    public void updateAll() { // todo подумать над механизмом ретрая (Андрей)
-        List<Product> products = IterableUtils.toList(productRepository.findAllSubscribedProduct());
+    private void updateAllUniversalMethod(List<Product> products) {
         for (Product product : products) {
             threadSleepRandomTime();
             log.info("update product info {}", product);
@@ -95,6 +82,12 @@ public class ProductService {
                 log.error("Error when update product {}", product, e);
             }
         }
+    }
+
+    @Transactional
+    public void updateAll() { // todo подумать над механизмом ретрая (Андрей)
+        List<Product> products = IterableUtils.toList(productRepository.findAllSubscribedProduct());
+        updateAllUniversalMethod(products);
     }
 
     private void threadSleepRandomTime() {
