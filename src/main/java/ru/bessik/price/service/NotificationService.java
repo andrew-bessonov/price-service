@@ -59,10 +59,12 @@ public class NotificationService {
 
         for (String telegramId : telegramIds) {
             try {
-                SendMessageResponse sendMessageResponse = telegramBotFeignClient.sendMessage(SendMessageRequest.builder()
+                SendMessageResponse sendMessageResponse = telegramBotFeignClient
+                        .sendMessage(SendMessageRequest.builder()
                         .telegramId(telegramId)
                         .message(message)
                         .build()); // todo переделать на кафку
+
                 if (SendMessageStatus.ERROR == sendMessageResponse.getStatus()) {
                     log.error("failed to send message to client {} in telegram", telegramId);
                 }

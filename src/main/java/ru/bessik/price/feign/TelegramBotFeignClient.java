@@ -13,4 +13,5 @@ public interface TelegramBotFeignClient {
 
     @PostMapping("/send")
     SendMessageResponse sendMessage(@RequestBody SendMessageRequest request);
+
 }

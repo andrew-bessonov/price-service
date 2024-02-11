@@ -1,7 +1,11 @@
 package ru.bessik.price.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.bessik.price.controller.dto.PriceRequest;
 import ru.bessik.price.controller.dto.PriceResponse;
@@ -24,7 +28,7 @@ public class PriceController {
      * @return последняя цена
      */
     @GetMapping("/price")
-    public PriceResponse getPrice(@RequestParam("url") String url) {
+    public PriceResponse getPrice(@NotBlank @RequestParam("url") String url) {
         log.info("[API] get price for {}", url);
         return productService.getPrice(url);
     }
@@ -36,7 +40,7 @@ public class PriceController {
      * @return статус
      */
     @PostMapping("/price/update")
-    public StatusResponse update(@RequestBody UpdatePriceRequest request) {
+    public StatusResponse update(@Valid @RequestBody UpdatePriceRequest request) {
         log.info("[API] update price {}", request.getProductUrl());
         productService.update(request.getProductUrl());
         return new StatusResponse("Цена успешно обновлена");
@@ -49,7 +53,7 @@ public class PriceController {
      * @return список цен за период
      */
     @PostMapping("/prices")
-    public PriceResponse getPrices(@RequestBody PriceRequest request) {
+    public PriceResponse getPrices(@Valid @RequestBody PriceRequest request) {
         log.info("[API] get prices for {}", request.getProductUrl());
         return productService.getPrices(request.getProductUrl(), request.getPeriodInDays());
     }
@@ -72,7 +76,7 @@ public class PriceController {
      * @return статус
      */
     @PostMapping("/prices/update-all/{telegramId}")
-    public StatusResponse updateAllForUser(@PathVariable String telegramId) {
+    public StatusResponse updateAllForUser(@NotBlank @PathVariable String telegramId) {
         log.info("[API] update all prices for user {}", telegramId);
         productService.updateAllForUser(telegramId);
         return new StatusResponse("Цены успешно обновлены");
