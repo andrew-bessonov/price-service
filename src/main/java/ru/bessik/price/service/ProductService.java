@@ -65,12 +65,13 @@ public class ProductService {
         User user = userRepository.findByTelegramId(telegramId)
                 .orElseThrow();
         List<Product> products = user.getSubscriptions();
-        updateAllUniversalMethod(products);
+        updatePriceOfProducts(products);
 
     }
 
-    private void updateAllUniversalMethod(List<Product> products) {
+    private void updatePriceOfProducts(List<Product> products) {
         for (Product product : products) {
+
             threadSleepRandomTime();
             log.info("update product info {}", product);
 
@@ -87,7 +88,7 @@ public class ProductService {
     @Transactional
     public void updateAll() { // todo подумать над механизмом ретрая (Андрей)
         List<Product> products = IterableUtils.toList(productRepository.findAllSubscribedProduct());
-        updateAllUniversalMethod(products);
+        updatePriceOfProducts(products);
     }
 
     private void threadSleepRandomTime() {
