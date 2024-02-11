@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.bessik.price.controller.dto.PriceRequest;
 import ru.bessik.price.controller.dto.PriceResponse;
@@ -26,7 +28,7 @@ public class PriceController {
      * @return последняя цена
      */
     @GetMapping("/price")
-    public PriceResponse getPrice(@NotBlank(message = "url not be null") @RequestParam("url") String url) {
+    public PriceResponse getPrice(@NotBlank @RequestParam("url") String url) {
         log.info("[API] get price for {}", url);
         return productService.getPrice(url);
     }
@@ -74,8 +76,7 @@ public class PriceController {
      * @return статус
      */
     @PostMapping("/prices/update-all/{telegramId}")
-    public StatusResponse updateAllForUser(@NotBlank(message = "telegram ID not be null")
-                                           @PathVariable String telegramId) {
+    public StatusResponse updateAllForUser(@NotBlank @PathVariable String telegramId) {
         log.info("[API] update all prices for user {}", telegramId);
         productService.updateAllForUser(telegramId);
         return new StatusResponse("Цены успешно обновлены");

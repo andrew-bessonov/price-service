@@ -13,6 +13,6 @@ public class UpdatePriceRequest {
     /**
      * Ссылка на товар
      */
-    @NotBlank(message = "url not be null")
+    @NotBlank
     private String productUrl;
 }
