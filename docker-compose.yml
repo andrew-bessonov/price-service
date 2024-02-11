@@ -1,21 +1,22 @@
-version: '3.9'
+version: "3.8"
 
 networks:
   default:
     name: backend
 
 services:
+
   postgres:
-    image: "postgres:16"
+    image: postgres:16.1-alpine
+    restart: always
     container_name: "db"
     env_file:
       - .env
-    environment:
-      PGDATA: "/postgresql/data/pgdata"
-    volumes:
-      - price-data:/postgresql/data
     ports:
-      - "5432:5432" # Закрыть после тестов
+      - "6432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   price-service:
     depends_on:
@@ -23,16 +24,16 @@ services:
     image: 'price-service:latest'
     build: ./
     ports:
-      - "8080:8080" # Закрыть после тестов
+      - "8080:8080"
     container_name: price-service
     env_file:
       - .env
     environment:
-      - DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
-      - DATASOURCE_USERNAME=${POSTGRES_USER}
-      - DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - DATASOURCE_URL=jdbc:postgresql://db:5432/${DATABASE_NAME}
+      - DATASOURCE_USERNAME=${DATABASE_USER}
+      - DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
       - TELEGRAM_BOT_SERVICE_URL=telegram-bot-service:8080
 
 volumes:
-  price-data:
+  db:
     driver: local
