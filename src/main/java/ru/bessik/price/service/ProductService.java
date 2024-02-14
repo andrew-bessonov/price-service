@@ -31,9 +31,6 @@ public class ProductService {
     private final UpdatePriceServiceFactory updatePriceServiceFactory;
     private final NotificationService notificationService;
 
-
-    // todo Проверить что цены вообще есть, отсортировать по дате, что бы getLast взял самую последнюю цену
-    // todo Если цен совсем нет, уведомить пользователя что цен на товар нет
     @Transactional
     public PriceDto getPrice(String productUrl) {
         Product product = productRepository.findByUrl(productUrl)
