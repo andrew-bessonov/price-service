@@ -3,10 +3,7 @@ package ru.bessik.price.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.bessik.price.controller.dto.PriceRequest;
-import ru.bessik.price.controller.dto.PriceResponse;
-import ru.bessik.price.controller.dto.StatusResponse;
-import ru.bessik.price.controller.dto.UpdatePriceRequest;
+import ru.bessik.price.controller.dto.*;
 import ru.bessik.price.service.ProductService;
 
 @RestController
@@ -24,7 +21,7 @@ public class PriceController {
      * @return последняя цена
      */
     @GetMapping("/price")
-    public PriceResponse getPrice(@RequestParam("url") String url) {
+    public PriceDto getPrice(@RequestParam("url") String url) {
         log.info("[API] get price for {}", url);
         return productService.getPrice(url);
     }

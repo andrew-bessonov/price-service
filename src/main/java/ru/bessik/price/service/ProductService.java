@@ -10,11 +10,14 @@ import ru.bessik.price.controller.dto.PriceResponse;
 import ru.bessik.price.entity.Price;
 import ru.bessik.price.entity.Product;
 import ru.bessik.price.entity.User;
+import ru.bessik.price.exception.NotFoundProductException;
+import ru.bessik.price.exception.PriceNotFoundException;
 import ru.bessik.price.repository.ProductRepository;
 import ru.bessik.price.repository.UserRepository;
 import ru.bessik.price.utils.PriceMapper;
 import ru.bessik.price.utils.Utils;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -29,13 +32,22 @@ public class ProductService {
     private final NotificationService notificationService;
 
 
+    // todo Проверить что цены вообще есть, отсортировать по дате, что бы getLast взял самую последнюю цену
+    // todo Если цен совсем нет, уведомить пользователя что цен на товар нет
     @Transactional
-    public PriceResponse getPrice(String productUrl) {
+    public PriceDto getPrice(String productUrl) {
         Product product = productRepository.findByUrl(productUrl)
-                .orElseThrow(); // todo кастомное исключение
-        Price lastPrice = product.getPrices().getLast();
-        PriceDto priceDto = PriceMapper.toDto(lastPrice);
-        return new PriceResponse(List.of(priceDto));
+                .orElseThrow(() -> new NotFoundProductException("not found product for url %s".formatted(productUrl)));
+
+        List<Price> prices = product.getPrices();
+        if (prices.isEmpty()) {
+            throw new PriceNotFoundException("product %s has no prices".formatted(product.getName()));
+        }
+
+        Price lastPrice = prices.stream()
+                .sorted(Comparator.comparing(Price::getCurrentDate))
+                .toList().getLast();
+        return PriceMapper.toDto(lastPrice);
     }
 
     @Transactional

@@ -42,7 +42,7 @@ public class Utils {
         Document document;
         try {
             document = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36")
+                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36")
                     .referrer("http://www.google.com")
                     .timeout(10000)
                     .get();
