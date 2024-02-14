@@ -19,7 +19,8 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Utils {
 
-    public static final String LINK_PATTERN_REGEX = "(http|https):\\/\\/([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])";
+    public static final String LINK_PATTERN_REGEX =
+            "(http|https):\\/\\/([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])";
 
     public static List<Price> getPricesFromPeriod(Product product, Integer periodInDays) {
         LocalDate startDate = LocalDate.now().minusDays(periodInDays);

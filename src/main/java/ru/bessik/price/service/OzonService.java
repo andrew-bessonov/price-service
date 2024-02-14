@@ -17,13 +17,13 @@ import java.time.LocalDate;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PiterGsmService implements UpdatePriceService {
+public class OzonService implements UpdatePriceService {
 
     private final ProductRepository productRepository;
 
     @Override
     public String getSiteUrl() {
-        return "pitergsm.ru";
+        return "www.ozon.ru";
     }
 
     @Override
@@ -57,18 +57,18 @@ public class PiterGsmService implements UpdatePriceService {
     }
 
     private String getProductName(Document document, String url) {
-        Element titleElement = document.selectFirst("div.col-12[h1]");
+        Element titleElement = document.selectFirst("h1");
 
         if (titleElement == null) {
             log.error("Не найдено наименование товара на странице {}", url);
             return null;
         }
 
-        return titleElement.attr("h1");
+        return titleElement.attr("l0q");
     }
 
     private Double getPrice(Document document, String url) {
-        Element priceElement = document.selectFirst("span.main-detail-price");
+        Element priceElement = document.selectFirst("span.p0l ol9");
 
         if (priceElement == null) {
             log.error("Не найдена цена на странице {}", url);

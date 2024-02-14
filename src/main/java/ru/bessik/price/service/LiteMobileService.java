@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.bessik.price.entity.Price;
@@ -12,18 +13,19 @@ import ru.bessik.price.entity.Product;
 import ru.bessik.price.repository.ProductRepository;
 import ru.bessik.price.utils.Utils;
 
+import java.sql.SQLOutput;
 import java.time.LocalDate;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PiterGsmService implements UpdatePriceService {
+public class LiteMobileService implements UpdatePriceService {
 
     private final ProductRepository productRepository;
 
     @Override
     public String getSiteUrl() {
-        return "pitergsm.ru";
+        return "lite-mobile.ru";
     }
 
     @Override
@@ -57,20 +59,27 @@ public class PiterGsmService implements UpdatePriceService {
     }
 
     private String getProductName(Document document, String url) {
-        Element titleElement = document.selectFirst("div.col-12[h1]");
+        Element titleElement = document.selectFirst("h1");
 
         if (titleElement == null) {
             log.error("Не найдено наименование товара на странице {}", url);
             return null;
         }
 
-        return titleElement.attr("h1");
+        return titleElement.text();
     }
 
     private Double getPrice(Document document, String url) {
-        Element priceElement = document.selectFirst("span.main-detail-price");
+        Element priceDiv = document.selectFirst("div.detail-card__price-cur");
 
-        if (priceElement == null) {
+        if(priceDiv == null ) {
+            log.error("Не найдена цена на странице {}", url);
+            return null; // todo заменить на кастомное исключение?
+        }
+
+        Element priceElement = priceDiv.selectFirst("span");
+
+        if(priceElement == null ) {
             log.error("Не найдена цена на странице {}", url);
             return null; // todo заменить на кастомное исключение?
         }
