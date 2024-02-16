@@ -15,6 +15,7 @@ import ru.bessik.price.utils.Utils;
 
 import java.sql.SQLOutput;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -37,12 +38,18 @@ public class LiteMobileService implements UpdatePriceService {
             return;
         }
 
-        Double price = getPrice(document, url);
-        if (price == null) {
+        Optional<Double> priceOpt = getPrice(document,url);
+        if (priceOpt.isEmpty())
             return;
-        }
+        Double price = priceOpt.get();
 
-        String productName = getProductName(document, url);
+
+        Optional<String> productNameOpt = getProductName(document,url);
+        if (productNameOpt.isEmpty())
+            return;
+
+        String productName = productNameOpt.get();
+
         if (product.getName() == null) {
             product.setName(productName);
         }
@@ -58,38 +65,34 @@ public class LiteMobileService implements UpdatePriceService {
         log.info("new price success saved {} - {}", updateProduct, price);
     }
 
-    private String getProductName(Document document, String url) {
+    private Optional<String> getProductName(Document document, String url) {
         Element titleElement = document.selectFirst("h1");
 
         if (titleElement == null) {
             log.error("Не найдено наименование товара на странице {}", url);
-            return null;
+            return Optional.empty();
         }
 
-        return titleElement.text();
+        return Optional.of(titleElement.text());
     }
 
-    private Double getPrice(Document document, String url) {
+    private Optional<Double> getPrice(Document document, String url) {
         Element priceDiv = document.selectFirst("div.detail-card__price-cur");
 
-        if(priceDiv == null ) {
-            log.error("Не найдена цена на странице {}", url);
-            return null; // todo заменить на кастомное исключение?
-        }
-
-        Element priceElement = priceDiv.selectFirst("span");
-
-        if(priceElement == null ) {
-            log.error("Не найдена цена на странице {}", url);
-            return null; // todo заменить на кастомное исключение?
-        }
-
-        String priceString = StringUtils.deleteAny(priceElement.text(), " ");
+        String priceString = "";
         try {
-            return Double.parseDouble(priceString);
+            Element priceElement = priceDiv.selectFirst("span");
+            priceString = StringUtils.deleteAny(priceElement.text(), " ");
+        } catch (Exception e) {
+            log.error("Не найдена цена на странице {}", url);
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.of(Double.parseDouble(priceString));
         } catch (NumberFormatException e) {
             log.error("Не удалось преобразовать цену {}", priceString, e);
-            return null;
+            return Optional.empty();
         }
     }
 }
