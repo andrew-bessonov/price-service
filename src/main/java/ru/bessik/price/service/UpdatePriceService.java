@@ -1,6 +1,8 @@
 package ru.bessik.price.service;
 
-import ru.bessik.price.entity.Product;
+import org.jsoup.nodes.Document;
+
+import java.util.Optional;
 
 public interface UpdatePriceService {
 
@@ -12,9 +14,19 @@ public interface UpdatePriceService {
     String getSiteUrl();
 
     /**
-     * Обновить цену у товара.
+     * Получить наимнование товара.
      *
-     * @param product товар
+     * @param document страница сайта
+     * @param url      адрес сайта
      */
-    void update(Product product);
+    Optional<String> getProductName(Document document, String url);
+
+
+    /**
+     * Получить стоимость товара.
+     *
+     * @param document страница сайта
+     * @param url      адрес сайта
+     */
+    Optional<Double> getPrice(Document document, String url);
 }

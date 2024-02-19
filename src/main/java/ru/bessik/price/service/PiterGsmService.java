@@ -1,18 +1,13 @@
 package ru.bessik.price.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import ru.bessik.price.entity.Price;
-import ru.bessik.price.entity.Product;
 import ru.bessik.price.repository.ProductRepository;
-import ru.bessik.price.utils.Utils;
-
-import java.time.LocalDate;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,61 +21,33 @@ public class PiterGsmService implements UpdatePriceService {
         return "pitergsm.ru";
     }
 
-    @Override
-    @Transactional
-    public void update(Product product) {
-        String url = product.getUrl();
-        Document document = Utils.getDocumentFromUrl(url);
-        if (document == null) {
-            return;
-        }
-
-        Double price = getPrice(document, url);
-        if (price == null) {
-            return;
-        }
-
-        String productName = getProductName(document, url);
-        if (product.getName() == null) {
-            product.setName(productName);
-        }
-
-        Price priceEntity = Price.builder()
-                .currentPrice(price)
-                .currentDate(LocalDate.now())
-                .product(product)
-                .build();
-        product.getPrices().add(priceEntity);
-
-        Product updateProduct = productRepository.save(product);
-        log.info("new price success saved {} - {}", updateProduct, price);
-    }
-
-    private String getProductName(Document document, String url) {
-        Element titleElement = document.selectFirst("div.col-12[h1]");
+    public Optional<String> getProductName(Document document, String url) {
+        Element titleElement = document.selectFirst("h1[data-product-name]");
 
         if (titleElement == null) {
             log.error("Не найдено наименование товара на странице {}", url);
-            return null;
+            return Optional.empty();
         }
 
-        return titleElement.attr("h1");
+        return Optional.of(titleElement.text());
     }
 
-    private Double getPrice(Document document, String url) {
-        Element priceElement = document.selectFirst("span.main-detail-price");
+    public Optional<Double> getPrice(Document document, String url) {
+        String priceString = "";
 
-        if (priceElement == null) {
+        try {
+            Element priceElement = document.selectFirst("span.main-detail-price");
+            priceString = StringUtils.deleteAny(priceElement.text(), " ");
+        } catch (Exception e) {
             log.error("Не найдена цена на странице {}", url);
-            return null; // todo заменить на кастомное исключение?
+            return Optional.empty();
         }
 
-        String priceString = StringUtils.deleteAny(priceElement.text(), " ");
         try {
-            return Double.parseDouble(priceString);
+            return Optional.of(Double.parseDouble(priceString));
         } catch (NumberFormatException e) {
             log.error("Не удалось преобразовать цену {}", priceString, e);
-            return null;
+            return Optional.empty();
         }
     }
 }
