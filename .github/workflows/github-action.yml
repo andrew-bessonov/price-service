@@ -2,6 +2,10 @@ name: deploy
 on:
   push:
     branches: [ "master" ]
+  pull_request:
+    branches:
+      - "master"
+    types: [ closed ]
 jobs:
   test:
     name: test
