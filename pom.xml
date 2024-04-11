@@ -21,6 +21,7 @@
         <jsoup.version>1.16.1</jsoup.version>
         <apache-collections4.version>4.4</apache-collections4.version>
         <liquibase-version>4.25.1</liquibase-version>
+        <kafka>3.1.1</kafka>
     </properties>
 
     <dependencies>
@@ -80,6 +81,13 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <version>${kafka}</version>
+        </dependency>
+
+
     </dependencies>
 
     <dependencyManagement>
@@ -100,6 +108,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <mainClass>ru.bessik.price.PriceServiceApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

@@ -46,7 +46,7 @@ public class UserService {
         userRepository.save(user);
 
         log.info("subscribed successfully {}", request);
-        return new StatusResponse("Подписка успешно оформлена, обновление цен каждый день");
+        return new StatusResponse("Подписка успешно оформлена");
     }
 
     private boolean siteIsSupported(String productUrl) {

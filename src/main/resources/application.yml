@@ -2,9 +2,9 @@ spring:
   application:
     name: price-service
   datasource:
-    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/price}
-    username: ${DATASOURCE_USERNAME:postgres}
-    password: ${DATASOURCE_PASSWORD:password}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/price}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -14,3 +14,8 @@ app:
     period: ${BEST_PRICE_PERIOD:30}
   feign:
     telegram-bot-service: ${TELEGRAM_BOT_SERVICE_URL:http://localhost:8081}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:29092}
+    group-id: ${spring.application.name}
+    topics:
+      telegram-bot-send: telegram-bot.send

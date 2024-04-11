@@ -6,10 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.bessik.price.entity.Price;
 import ru.bessik.price.entity.Product;
 import ru.bessik.price.entity.User;
-import ru.bessik.price.feign.TelegramBotFeignClient;
-import ru.bessik.price.feign.dto.SendMessageRequest;
-import ru.bessik.price.feign.dto.SendMessageResponse;
-import ru.bessik.price.feign.dto.SendMessageStatus;
+import ru.bessik.price.kafka.KafkaSender;
+import ru.bessik.price.kafka.dto.TelegramBotMessage;
 import ru.bessik.price.properties.AppProperties;
 import ru.bessik.price.utils.Utils;
 
@@ -22,7 +20,7 @@ public class NotificationService {
 
     private static final String MESSAGE_TEXT = "Изменилась цена на товар %s, \nСейчас самая низкая за последний месяц (%s)";
 
-    private final TelegramBotFeignClient telegramBotFeignClient;
+    private final KafkaSender kafkaSender;
     private final AppProperties appProperties;
 
     /**
@@ -58,19 +56,10 @@ public class NotificationService {
                 .toList();
 
         for (String telegramId : telegramIds) {
-            try {
-                SendMessageResponse sendMessageResponse = telegramBotFeignClient
-                        .sendMessage(SendMessageRequest.builder()
-                        .telegramId(telegramId)
-                        .message(message)
-                        .build()); // todo переделать на кафку
-
-                if (SendMessageStatus.ERROR == sendMessageResponse.getStatus()) {
-                    log.error("failed to send message to client {} in telegram", telegramId);
-                }
-            } catch (Exception e) {
-                log.error("Не удалось отправить сообщение", e);
-            }
+            kafkaSender.sendTelegramBotMessage(TelegramBotMessage.builder()
+                    .telegramId(telegramId)
+                    .message(message)
+                    .build());
         }
     }
 
