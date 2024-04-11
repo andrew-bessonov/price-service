@@ -1,0 +1,82 @@
+name: deploy
+on:
+  push:
+    branches: [ "master" ]
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'oracle'
+          cache: maven
+          cache-dependency-path: ${{github.event.repository.name}}/'pom.xml'
+
+      - name: Maven test
+        run: mvn -B test --file pom.xml
+
+  build:
+    name: build
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'oracle'
+          cache: maven
+          cache-dependency-path: ${{github.event.repository.name}}/'pom.xml'
+
+      - name: Maven package
+        run: mvn package -f pom.xml
+
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{vars.DOCKER_HUB_USER}}/${{github.event.repository.name}}
+
+      - name: Publish Docker
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: ${{vars.DOCKER_HUB_USER}}/${{github.event.repository.name}}
+          username: ${{vars.DOCKER_HUB_USER}}
+          password: ${{secrets.DOCKER_HUB_SECRET}}
+
+  deploy:
+    name: deploy
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set the Kubernetes context
+        uses: Azure/k8s-set-context@v3.0
+        with:
+          method: service-account
+          k8s-url: https://${{vars.SERVER_IP}}:${{vars.SERVER_PORT}}
+          k8s-secret: ${{secrets.KUBERNETES_SECRET}}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to the Kubernetes cluster
+        uses: Azure/k8s-deploy@v5.0.0
+
+        with:
+          namespace: default
+          manifests: |
+            kubernetes/deployment.yaml
+            kubernetes/ingress.yaml
+            kubernetes/service.yaml
+          images: |
+            ghcr.io/${{github.repository}}:${{github.sha}}
