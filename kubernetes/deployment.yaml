@@ -22,20 +22,4 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
-          env:
-            - name: URL
-              valueFrom:
-                secretKeyRef:
-                  name: price-service-credentials
-                  key: url
-            - name: USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: price-service-credentials
-                  key: username
-            - name: PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: price-service-credentials
-                  key: password
       restartPolicy: Always
