@@ -5,8 +5,6 @@ spring:
     url: jdbc:postgresql://${DATABASE_URL}/${DATABASE_NAME}
     username: ${DATABASE_USER:}
     password: ${DATABASE_PASSWORD:}
-#    driver-class-name: org.postgresql.Driver
-  # test
   jpa:
     hibernate:
       ddl-auto: none
@@ -16,4 +14,4 @@ app:
   best-price:
     period: ${BEST_PRICE_PERIOD:30}
   feign:
-    telegram-bot-service: ${TELEGRAM_BOT_SERVICE_URL:http://localhost:8081}
+    telegram-bot-service: ${TELEGRAM_BOT_SERVICE_URL:}
