@@ -15,8 +15,6 @@ public class ProductController {
 
     private final UserService userService;
 
-    // todo метод для обновления всех цен только у одного пользователя: принимает telegramId (/update-on-user/{telegramId}) (Дамир) + телеграм бот сервис
-
     /**
      * Подписаться на товар
      *

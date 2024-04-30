@@ -14,3 +14,4 @@ public class SendMessageRequest {
     private String telegramId;
     private String message;
 }
+

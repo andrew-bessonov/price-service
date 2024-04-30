@@ -2,15 +2,16 @@ spring:
   application:
     name: price-service
   datasource:
-    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/price}
-    username: ${DATASOURCE_USERNAME:postgres}
-    password: ${DATASOURCE_PASSWORD:password}
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DATABASE_URL}/${DATABASE_NAME}
+    username: ${DATABASE_USER:}
+    password: ${DATABASE_PASSWORD:}
   jpa:
     hibernate:
       ddl-auto: none
+  config:
+    import: optional:configserver:http://config-server:8080
 app:
   best-price:
     period: ${BEST_PRICE_PERIOD:30}
   feign:
-    telegram-bot-service: ${TELEGRAM_BOT_SERVICE_URL:http://localhost:8081}
+    telegram-bot-service: ${TELEGRAM_BOT_SERVICE_URL:}
