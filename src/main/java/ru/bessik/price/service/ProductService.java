@@ -30,6 +30,7 @@ public class ProductService {
     private final UserRepository userRepository;
     private final UpdatePriceServiceFactory updatePriceServiceFactory;
     private final NotificationService notificationService;
+    private final ProductPriceUpdater productPriceUpdater;
 
     @Transactional
     public PriceDto getPrice(String productUrl) {
@@ -65,7 +66,8 @@ public class ProductService {
         Product product = productRepository.findByUrl(url)
                 .orElseThrow();
         UpdatePriceService service = updatePriceServiceFactory.getService(url);
-        service.update(product);
+
+        productPriceUpdater.update(product, service);
         notificationService.checkLastPriceIsBest(product);
     }
 
@@ -86,7 +88,7 @@ public class ProductService {
 
             try {
                 UpdatePriceService service = updatePriceServiceFactory.getService(product.getUrl());
-                service.update(product);
+                productPriceUpdater.update(product, service);
                 notificationService.checkLastPriceIsBest(product);
             } catch (Exception e) {
                 log.error("Error when update product {}", product, e);

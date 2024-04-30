@@ -43,6 +43,7 @@ public class UserService {
             return new StatusResponse("Вы уже подписаны на этот товар");
         }
 
+
         user.getSubscriptions().add(product);
         userRepository.save(user);
 

@@ -38,6 +38,7 @@ public class PriceController {
     public StatusResponse update(@Valid @RequestBody UpdatePriceRequest request) {
         log.info("[API] update price {}", request.getProductUrl());
         productService.update(request.getProductUrl());
+//todo необходимо уведомлять, если обновить цену не удалось
         return new StatusResponse("Цена успешно обновлена");
     }
 
@@ -62,6 +63,7 @@ public class PriceController {
     public StatusResponse updateAll() {
         log.info("[API] update all prices");
         productService.updateAll();
+//todo необходимо уведомлять, если обновить цену не удалось
         return new StatusResponse("Цены успешно обновлены");
     }
 
@@ -74,6 +76,7 @@ public class PriceController {
     public StatusResponse updateAllForUser(@NotBlank @PathVariable String telegramId) {
         log.info("[API] update all prices for user {}", telegramId);
         productService.updateAllForUser(telegramId);
+
         return new StatusResponse("Цены успешно обновлены");
 
     }
