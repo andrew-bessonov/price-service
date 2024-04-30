@@ -19,8 +19,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Utils {
 
-    public static final String LINK_PATTERN_REGEX =
-            "(http|https):\\/\\/([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])";
+    public static final String LINK_PATTERN_REGEX = "(http|https:\\/\\/)([w.]*)([\\w_-]+(?:(?:\\.[\\w-]+)+))([\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])";
 
     public static List<Price> getPricesFromPeriod(Product product, Integer periodInDays) {
         LocalDate startDate = LocalDate.now().minusDays(periodInDays);
@@ -34,7 +33,7 @@ public class Utils {
         Pattern pattern = Pattern.compile(LINK_PATTERN_REGEX);
         Matcher matcher = pattern.matcher(url);
         if (matcher.matches()) {
-            return matcher.group(2);
+            return matcher.group(3);
         }
         throw new RuntimeException("url is not valid");
     }
@@ -43,7 +42,7 @@ public class Utils {
         Document document;
         try {
             document = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36")
+                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36")
                     .referrer("http://www.google.com")
                     .timeout(10000)
                     .get();

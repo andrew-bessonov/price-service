@@ -21,6 +21,7 @@
         <jsoup.version>1.16.1</jsoup.version>
         <apache-collections4.version>4.4</apache-collections4.version>
         <liquibase-version>4.25.1</liquibase-version>
+        <cloud.config.version>4.1.1</cloud.config.version>
     </properties>
 
     <dependencies>
@@ -35,8 +36,19 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-config-client</artifactId>
+            <version>${cloud.config.version}</version>
         </dependency>
 
         <dependency>
